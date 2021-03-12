@@ -41,8 +41,9 @@ jobs:
           name: Determine new version
           # for Go modules, we only need version numbers on `main`, as Go can
           # pull any other git commit by hash
+          # FIXME: disabled until we are ready to start versioning
           command: |
-            if [ "$CIRCLE_BRANCH" = "main" ]; then
+            if false && [ "$CIRCLE_BRANCH" = "main" ]; then
               ./ci_scripts/ci_tool.sh --run_release
             fi
       - store_artifacts:
