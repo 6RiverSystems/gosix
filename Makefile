@@ -31,10 +31,10 @@ $(GENERATE_SIMPLE): %.go:
 	gofmt -l -s -w ./$(dir $@)
 	go run golang.org/x/tools/cmd/goimports -l -w $(GOIMPORTSARGS) ./$(dir $@)
 
-./common/swagger-ui/ui/swagger-ui-bundle.js: ./common/swagger-ui/generate.go ./common/swagger-ui/get-ui/get-swagger-ui.go
-	go generate -x ./common/swagger-ui
-	gofmt -l -s -w ./common/swagger-ui
-	go run golang.org/x/tools/cmd/goimports -l -w $(GOIMPORTSARGS) ./common/swagger-ui
+./swagger-ui/ui/swagger-ui-bundle.js: ./swagger-ui/generate.go ./swagger-ui/get-ui/get-swagger-ui.go
+	go generate -x ./swagger-ui
+	gofmt -l -s -w ./swagger-ui
+	go run golang.org/x/tools/cmd/goimports -l -w $(GOIMPORTSARGS) ./swagger-ui
 
 get:
 # go mod download mucks up go.sum since 1.16
@@ -98,6 +98,8 @@ test-go-ci-split:
 	gotestsum --format standard-quiet --junitfile $(TEST_RESULTS)/gotestsum-report.xml -- $(TESTARGS) -coverprofile=${TEST_RESULTS}/coverage.out $(PACKAGE_NAMES)
 .PHONY: test vet test-go test-go-ci-split
 
-clean:
-	rm -rf $(GENERATED_FILES) bin/ coverage.out coverage.html ./swagger-ui/ui/ .version
-.PHONY: clean
+clean-generated:
+	rm -rf $(GENERATED_FILES) ./swagger-ui/ui/ .version
+clean: clean-generated
+	rm -rf bin/ coverage.out coverage.html
+.PHONY: clean clean-generated

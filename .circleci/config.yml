@@ -50,12 +50,14 @@ jobs:
           path: .version
       - run: make get
       - run: make install-ci-tools
-      - run: make generate
       - run:
           # this is a library others pull in, so the proper generated code _MUST_
           # be committed
-          name: check committed generated code is up to date
-          command: git diff --exit-code
+          name: Verify committed generated code is up to date
+          command: |
+            make clean-generated
+            make generate
+            git diff --exit-code
 
       - run:
           name: Compile code
