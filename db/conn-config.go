@@ -1,0 +1,254 @@
+package db
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"net/url"
+	"os"
+	"strings"
+	"syscall"
+	"time"
+
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/stdlib"
+	"github.com/pkg/errors"
+
+	"go.6river.tech/gosix/db/postgres"
+	"go.6river.tech/gosix/logging"
+)
+
+var defaultDbName string
+
+var (
+	// these names need to match what ent uses
+
+	PostgresDialect = "postgres"
+	SqliteDialect   = "sqlite3"
+)
+
+func DefaultDbUrl() string {
+	url := os.Getenv("DATABASE_URL")
+	if url != "" {
+		return url
+	}
+
+	// TODO: don't use NODE_ENV for things that aren't nodejs
+	env := os.Getenv("NODE_ENV")
+	if env == "" {
+		// assume dev mode if unspecified
+		env = "development"
+	}
+
+	if defaultDbName == "" {
+		panic("Must call SetDefaultDbName before configuring DB")
+	}
+
+	if env == "test" {
+		// use sqlite instead. don't use memory mode because of
+		// https://github.com/mattn/go-sqlite3/issues/923
+		return SQLiteDSN(defaultDbName, false, false)
+	}
+
+	// generate something like postgres://localhost/foo_development
+	return PostgreSQLDSN(env)
+}
+
+func PostgreSQLDSN(suffix string) string {
+	return fmt.Sprintf("postgres://6river:6river@localhost/%s_%s?sslmode=disable", defaultDbName, suffix)
+}
+
+func SQLiteDSN(filename string, fileScheme, memory bool) string {
+	if strings.HasPrefix(filename, "/") {
+		// sqlite:relativepath or sqlite:///some/abs/path
+		filename = "//" + filename
+	}
+	if !strings.HasSuffix(filename, ".sqlite3") {
+		filename = filename + ".sqlite3"
+	}
+	scheme := "sqlite"
+	if fileScheme {
+		scheme = "file"
+	}
+	q := url.Values{
+		"_fk":           []string{"true"},
+		"_journal_mode": []string{"wal"},
+		"cache":         []string{"private"},
+		"_busy_timeout": []string{"10000"},
+		// we need BEGIN IMMEDIATE for several use cases to work
+		"_txlock": []string{"immediate"},
+	}
+	if memory {
+		// memory mode needs either shared cache, or single connection. shared cache
+		// doesn't play nice and results in lots of unfixable "table is locked"
+		// errors, so instead rely on `Open` to set the max conns appropriately
+		q.Set("mode", "memory")
+		// q.Set("cache", "shared")
+
+		// even so, memory mode is not safe, as a transaction associated with a
+		// canceled context will cause the connection to be forcibly closed and thus
+		// the whole database to be lost, schema and all:
+		// https://github.com/mattn/go-sqlite3/issues/923
+	}
+	return fmt.Sprintf("%s:%s?%s", scheme, filename, q.Encode())
+}
+
+func SetDefaultDbName(name string) {
+	if defaultDbName != "" {
+		panic("Already called SetDefaultDbName")
+	}
+	defaultDbName = name
+}
+
+func GetDefaultDbName() string {
+	if defaultDbName == "" {
+		panic("No default db name set")
+	}
+	return defaultDbName
+}
+
+func ParseDefault() (driverName, dialectName, dsn string, err error) {
+	dsn = DefaultDbUrl()
+
+	if strings.HasPrefix(dsn, "sqlite:") {
+		dsn = "file:" + strings.TrimPrefix(dsn, "sqlite:")
+		driverName = "sqlite3"
+		// driverName = "sqlite" // for modernc driver, in the future
+		dialectName = SqliteDialect
+	} else if strings.HasPrefix(dsn, "postgres") {
+		driverName = "pgx"
+		dialectName = PostgresDialect
+	} else {
+		return "", "", dsn, errors.Errorf("Unrecognized db url '%s'", dsn)
+	}
+	return
+}
+
+func OpenDefault() (db *sql.DB, driverName, dialectName string, err error) {
+	var dsn string
+	if driverName, dialectName, dsn, err = ParseDefault(); err != nil {
+		return
+	} else {
+		db, err = Open(driverName, dialectName, dsn)
+		return
+	}
+}
+
+func Open(driverName, dialectName, dsn string) (db *sql.DB, err error) {
+	if driverName == "pgx" {
+		// wire up the OnNotice logger
+		var cfg *pgx.ConnConfig
+		cfg, err = pgx.ParseConfig(dsn)
+		if err != nil {
+			return
+		}
+		logger := logging.GetLogger("pgx/notice")
+		cfg.OnNotice = func(pc *pgconn.PgConn, n *pgconn.Notice) {
+			logger.Info().Interface("notice", n).Msg(n.Message)
+		}
+		db = stdlib.OpenDB(*cfg)
+	} else {
+		db, err = sql.Open(driverName, dsn)
+		if err != nil {
+			err = errors.Wrap(err, "Failed to open default DB connection")
+		}
+	}
+
+	maxOpenConns := 10
+	maxIdleTime := time.Second
+	if driverName == "sqlite3" {
+		if strings.Contains(dsn, "mode=memory") {
+			// memory mode can only have one connection at a time, unless shared cache
+			// mode is in use, because otherwise extra connections will see separate
+			// DBs. Shared cache can alleviate that, but creates "table is locked"
+			// errors that are largely unfixable.
+			maxOpenConns = 1
+			// we don't want to kill the last connection ever, we'd lose the data
+			maxIdleTime = 0
+		}
+	}
+	// db.SetMaxIdleConns has a sane default
+	db.SetMaxOpenConns(maxOpenConns)
+	db.SetConnMaxIdleTime(maxIdleTime)
+	// don't think we need to use db.SetConnMaxLifetime()
+
+	return
+}
+
+// WaitForDB repeatedly tries to connect to the default DB until it either
+// succeeds, or the given context is canceled.
+func WaitForDB(ctx context.Context) error {
+	logger := logging.GetLogger("dbwait")
+RETRY:
+	for {
+		db, _, _, err := OpenDefault()
+		if err == nil {
+			err = db.PingContext(ctx)
+		}
+		if err == nil {
+			return nil
+		}
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			return err
+		}
+
+		retriable := false
+		var errno syscall.Errno
+		if errors.As(err, &errno) && errno == syscall.ECONNREFUSED {
+			retriable = true
+		} else if _, ok := postgres.IsPostgreSQLErrorCode(err, postgres.CannotConnectNow); ok {
+			// database startup in progress
+			retriable = true
+		} else if _, ok := postgres.IsPostgreSQLErrorCode(err, postgres.InvalidCatalogName); ok {
+			if createVia := os.Getenv("CREATE_DB_VIA"); createVia != "" {
+				// database doesn't exist and we have a rule for how to create it
+				driverName, dialect, dsn, parseErr := ParseDefault()
+				if parseErr == nil {
+					// try to connect to CREATE_DB_VIA and create our db
+					if createErr := TryCreateDB(ctx, driverName, dialect, dsn, createVia); createErr == nil {
+						logger.Info().
+							Err(err).
+							Str("createVia", createVia).
+							Msg("Auto-created database after connect error, retrying db connect")
+						continue RETRY
+					}
+				}
+			}
+		}
+
+		if !retriable {
+			return err
+		}
+
+		logger.Warn().Err(err).Msg("DB not ready yet, will retry")
+
+		// retry every second
+		retry := time.After(time.Second)
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-retry:
+			continue RETRY
+		}
+	}
+}
+
+func TryCreateDB(ctx context.Context, driverName, dialect, dsn, createVia string) error {
+	if driverName == "pgx" && dialect == PostgresDialect {
+		cfg, err := pgx.ParseConfig(dsn)
+		if err != nil {
+			return err
+		}
+		var origDB string
+		origDB, cfg.Database = cfg.Database, createVia
+		db := stdlib.OpenDB(*cfg)
+		defer db.Close()
+		// can't use placeholders for CREATE DATABASE, have to escape (quote) things instead
+		_, err = db.ExecContext(ctx, fmt.Sprintf("CREATE DATABASE %s", postgres.QuoteIdentifier(origDB)))
+		// TODO: detect "already exists" and report that as success (e.g. multiple instances racing to create)
+		return err
+	} else {
+		return errors.New("Don't know how to create this kind of db")
+	}
+}

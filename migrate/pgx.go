@@ -1,0 +1,104 @@
+package migrate
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4/stdlib"
+	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
+
+	"go.6river.tech/gosix/db/postgres"
+)
+
+type PgxDialect struct{}
+
+var _ Dialect = &PgxDialect{}
+
+func (p *PgxDialect) DefaultConfig() *Config {
+	return &Config{
+		SchemaName: "public",
+		TableName:  "migrations",
+	}
+}
+
+// func (p *PgxDialect) Open(ctx context.Context, url string) (*sqlx.DB, error) {
+// 	return sqlx.Open("pgx", url)
+// }
+
+func (p *PgxDialect) Verify(db *sqlx.DB) error {
+	if _, ok := db.Driver().(*stdlib.Driver); !ok {
+		return errors.Errorf("Cannot use Pgx dialect without pgx driver")
+	}
+	return nil
+}
+
+func (p *PgxDialect) EnsureMigrationsTable(ctx context.Context, db *sqlx.DB, cfg *Config) error {
+	// TODO: this won't deal if the table is wrong
+
+	sql := fmt.Sprintf(
+		`CREATE TABLE IF NOT EXISTS %s.%s (
+			id bigserial primary key,
+			name text not null unique,
+			run_on timestamptz not null
+		)`,
+		postgres.QuoteIdentifier(cfg.SchemaName),
+		postgres.QuoteIdentifier(cfg.TableName),
+	)
+
+	_, err := db.ExecContext(ctx, sql)
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		if pgErr.Code == "23505" && pgErr.ConstraintName == "pg_type_typname_nsp_index" {
+			// raced creating the migration tables, happens during `go test` sometimes, ignore it
+			err = nil
+		}
+	}
+
+	return err
+}
+
+func (p *PgxDialect) SelectStates(cfg *Config) string {
+	return fmt.Sprintf(
+		`SELECT id, name, run_on from %s.%s`,
+		postgres.QuoteIdentifier(cfg.SchemaName),
+		postgres.QuoteIdentifier(cfg.TableName),
+	)
+}
+
+func (p *PgxDialect) InsertMigration(cfg *Config) string {
+	return fmt.Sprintf(
+		`INSERT INTO %s.%s (name, run_on) VALUES ($1, $2)`,
+		postgres.QuoteIdentifier(cfg.SchemaName),
+		postgres.QuoteIdentifier(cfg.TableName),
+	)
+}
+
+func (p *PgxDialect) DeleteMigration(cfg *Config) string {
+	return fmt.Sprintf(
+		`DELETE FROM %s.%s WHERE name = $1`,
+		postgres.QuoteIdentifier(cfg.SchemaName),
+		postgres.QuoteIdentifier(cfg.TableName),
+	)
+}
+
+func (p *PgxDialect) BeforeMigration(
+	ctx context.Context,
+	db *sqlx.DB,
+	tx *sqlx.Tx,
+	name string,
+	direction Direction,
+) error {
+	_, err := tx.ExecContext(
+		ctx,
+		// can't use placeholders inside a string (which the pl/pgsql code here is),
+		// so have to do quoting instead
+		fmt.Sprintf(
+			`DO $$ BEGIN RAISE NOTICE 'About to %% migration %%', %s, %s; END; $$`,
+			postgres.QuoteString(direction.String()),
+			postgres.QuoteString(name),
+		),
+	)
+	return err
+}
