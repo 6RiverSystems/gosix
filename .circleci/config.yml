@@ -2,9 +2,6 @@ version: 2.1
 
 jobs:
   all-in-one:
-    # performance experiment: do everything in one big run, to avoid all the
-    # layer caching problems. seems to be faster for small projects but this may
-    # not hold for larger ones
     docker:
       - image: cimg/go:1.16
       - image: circleci/postgres:9.6-alpine
@@ -41,9 +38,8 @@ jobs:
           name: Determine new version
           # for Go modules, we only need version numbers on `main`, as Go can
           # pull any other git commit by hash
-          # FIXME: disabled until we are ready to start versioning
           command: |
-            if false && [ "$CIRCLE_BRANCH" = "main" ]; then
+            if [ "$CIRCLE_BRANCH" = "main" ]; then
               ./ci_scripts/ci_tool.sh --run_release
             fi
       - store_artifacts:
