@@ -20,7 +20,7 @@ TESTARGS:=-vet=off -race -cover -coverpkg=./...
 GOIMPORTSARGS:=-local github.com/6RiverSystems
 
 # default `make` invocation is to run the full generate/build/lint/test sequence
-default: test
+default: compile-code test
 .PHONY: default
 
 generate: $(GENERATED_FILES)
