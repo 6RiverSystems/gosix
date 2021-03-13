@@ -1,4 +1,4 @@
-package gosix
+package internal
 
 // this file just exists so that our linting-related dependencies won't get
 // tidied out of go.mod
