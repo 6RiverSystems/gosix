@@ -52,7 +52,7 @@ var _ Migration = &SQLMigration{}
 
 func (m *SQLMigration) Name() string { return m.name }
 
-func (m *SQLMigration) contents(up Direction) (string, error) {
+func (m *SQLMigration) Contents(up Direction) (string, error) {
 	var getter ContentGetter
 	if up {
 		getter = m.up
@@ -74,7 +74,7 @@ func (m *SQLMigration) Down(ctx context.Context, _ *sqlx.DB, tx *sqlx.Tx) error 
 }
 
 func (m *SQLMigration) run(ctx context.Context, tx *sqlx.Tx, direction Direction) error {
-	contents, err := m.contents(direction)
+	contents, err := m.Contents(direction)
 	if err != nil {
 		return err
 	}
