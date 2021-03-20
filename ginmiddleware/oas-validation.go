@@ -5,6 +5,8 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
+	"github.com/getkin/kin-openapi/routers"
+	"github.com/getkin/kin-openapi/routers/legacy"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 )
@@ -17,14 +19,17 @@ func WithOASValidation(
 	errorHandler OASErrorHandler,
 	options *openapi3filter.Options,
 ) gin.HandlerFunc {
-	oasRouter := openapi3filter.NewRouter().WithSwagger(swagger)
+	oasRouter, err := legacy.NewRouter(swagger)
+	if err != nil {
+		panic(errors.Wrap(err, "unable to create a router for the given swagger schema"))
+	}
 	if errorHandler == nil {
 		errorHandler = DefaultOASErrorHandler
 	}
 	return func(c *gin.Context) {
 		// TODO: prometheus metrics for validation failures
 
-		route, pathParams, err := oasRouter.FindRoute(c.Request.Method, c.Request.URL)
+		route, pathParams, err := oasRouter.FindRoute(c.Request)
 		if err != nil {
 			errorHandler(c, err)
 			// either aborted or we don't want to validate this request, either way
@@ -96,16 +101,17 @@ func DefaultOASErrorHandler(c *gin.Context, err error) {
 	// nolint:errcheck // return value here is just a wrapped copy of the input
 	c.Error(err)
 	var (
-		routeErr    *openapi3filter.RouteError
+		routeErr    *routers.RouteError
 		requestErr  *openapi3filter.RequestError
 		responseErr *openapi3filter.ResponseError
 		parseErr    *openapi3filter.ParseError
 	)
+	// TODO: adapt ValidationErrorEncoder to work here
 	switch {
 	case errors.As(err, &routeErr):
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": routeErr.Reason})
 	case errors.As(err, &requestErr):
-		c.AbortWithStatusJSON(requestErr.HTTPStatus(), gin.H{"error": requestErr.Reason, "details": requestErr.Err})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": requestErr.Reason, "details": requestErr.Err})
 	case errors.As(err, &responseErr):
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": responseErr.Reason, "details": responseErr.Err})
 	case errors.As(err, &parseErr):
@@ -118,7 +124,7 @@ func DefaultOASErrorHandler(c *gin.Context, err error) {
 
 func AllowUndefinedRoutes(handler OASErrorHandler) OASErrorHandler {
 	return func(c *gin.Context, err error) {
-		var re *openapi3filter.RouteError
+		var re *routers.RouteError
 		if errors.As(err, &re) {
 			// TODO: prometheus metric for this
 			return
