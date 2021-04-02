@@ -47,17 +47,23 @@ func contextBuilder(component string, with func(zerolog.Context) zerolog.Context
 	}
 }
 
-// Create and register, or return if already present, a logger for the given
-// component name. Hierarchies in components should be represented with `/`
-// characters in their name.
+// GetLogger creates a logger for the given component name. Hierarchies in
+// components should be represented with `/` characters in their name.
 func GetLogger(component string) *Logger {
 	return newFrom(contextBuilder(component, nil))
 }
 
+// GetLoggerWith creates a logger for the given component name and custom
+// context configuration function. Hierarchies in components should be
+// represented with `/` characters in their name.
 func GetLoggerWith(component string, with func(zerolog.Context) zerolog.Context) *Logger {
 	return newFrom(contextBuilder(component, with))
 }
 
+// SetComponentLevel changes the log level for a given component. If children is
+// true, it will also change the log level for any child components that have
+// been customized (by deleting that customization so that they inherit the log
+// level from their parent).
 func SetComponentLevel(component string, children bool, level zerolog.Level) {
 	configMutex.Lock()
 	defer configMutex.Unlock()
@@ -92,11 +98,13 @@ func ComponentLevels() map[string]zerolog.Level {
 	return ret
 }
 
-// Matches github.com/hashicorp/go-retryablehttp
+// LeveledLogger implements the interface of the same name from
+// github.com/hashicorp/go-retryablehttp
 type LeveledLogger struct {
 	l *Logger
 }
 
+// Leveled returns a LeveledLogger wrapper for the given Logger
 func Leveled(l *Logger) LeveledLogger {
 	return LeveledLogger{l}
 }
