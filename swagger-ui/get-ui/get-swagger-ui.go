@@ -24,12 +24,12 @@ import (
 
 // update this by running: `npm view swagger-ui-dist@latest --json .dist`
 var swaggerUiDistInfo = `{
-  "integrity": "sha512-hTNX6cX7KWtBZgk6ZQSOzsBJhqdCmD5NOIjb6dBPKSnYZidSkIXOcaPMR3+kwxLrj8bDC881bSDlNbLsHikacg==",
-  "shasum": "4ed395b21f35a7b007c6e70ca3d5aa911e777f68",
-  "tarball": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-3.42.0.tgz",
+  "integrity": "sha512-ueaZ45OHhHvGKmocvCkxFY8VCfbP5PgcxutoQxy9j8/VZeDoLDvg8FBf4SO6NxHhieNAdYPUd0O6G9FjJO2fqw==",
+  "shasum": "f08d2c9b4a2dce922ba363c598e4795b5ccf0b80",
+  "tarball": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-3.46.0.tgz",
   "fileCount": 20,
-  "unpackedSize": 18500933,
-  "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgHDuhCRA9TVsSAnZWagAAEzIP/ig2VEO+uLp6bwrnBVsE\nMh1fiY8Jv2vDRlXPNtHFD6ZxFz8HxMj0rUpca3pTN6jqbvzyN9ktxf+UEBQg\nzqk89b3R5d+QtctlVm9pflS8BZyBPgRcPaS6KW3Hf4H0JcJgzpwwrfCHaJ2a\nDqj0cNLEJRfwnn39zFQh+i+cTzwLj5OlAOsNc761lsVtqUJ9a1oIsyBJHF90\nkFC+svRZoAd0hb+0zGYV9ujdpHmagsgzjDt3PcCFdA9DIAIle1xawK4MUMn0\nh0mjlEG8P4kF365KLbBS0qlSjxBcJS1Tv0wYCLI1EAzXIxw+Dc4cz6004kJq\ngmc+8ue9T2KYNMRZaFXDGrJJ/CNw8vxut9laql4Ub2brO+VMY7CwBEqc1goL\nPOB1sYig148NPEkR9yXh9CBWRMWn596ZAFOfgAqieQXQa0dn7RhH1S/Gs8TS\nSydOZa5sOyNl9IXAggudYPWx110VQqWVHCCdeGjvz8Zgm12njWJ+9aTBAbl8\nKOFky7TjC+Jm0xGg/AbGPS7Cb2MB5M2zpki+JKmqi1zp0v+hcWAYndgykTpv\n/mc2guzR78DAb9pih1HW5mgk51BwOjQoDRQ44IscABIVqj32wx1sFR7slcdP\nQObZXNDxlQKs4FNsy7a9KtdkuzjuBETEB8SzeJ87lU3o9CPY24f7GP2WPnvV\ni/wZ\r\n=IBgz\r\n-----END PGP SIGNATURE-----\r\n"
+  "unpackedSize": 18917597,
+  "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgZMUFCRA9TVsSAnZWagAAZKcP/14/rrHJgUel//wjq6zk\nKZEXL3lMJhxleZP/Zum5MJmVOaEJHhttbkYdo/o+YL7E5CUvDg3dzk3ryTtB\nX+oG1Pp5rGDLBoc62l+V3Y7iEAM5j86kf1lTmPBt7ua2sxDb0WIFNKa3GUFw\n7BZuWCGx78lifw5xJAKjp4sNe72twn+y4ZyUPhz5OL/owxyFlAs+5zZzia9x\nHSTt3zhUUFIG8EPYA29x+wH97KIBh99zGgtvvLalk1NbH6lmr7HxHmp6EHnX\nPjV54KUalJUgUBdBYIAdAEP9v+5oQg8CxqDac5sAYMI3r13xgSEDcYk8GQZt\n1FG30f/APBhHDUuMD7peZV9graXYTHKh5FCQq4cnRy4GsbhS9UpJFVFXWAS1\n/0pH1kkcEuQwTwIuCq1jnQKWxJA77ETJtqqfjoYxiUBevN7m+cfhiPLGrGpz\njO6VXnjKaInq0SMa8Y19DPpMK5xWnVmwB+6Xiw+x8PKlpiBoaFRmnQ/NIrqB\npoV+naVODuDeRuCdnUr4HYp1Y9Qv58HmukPRqf+KyHvyWhHL/az1ZTAmLvsF\nduxTe7FsOzc4S77WF9QwFlsbiHrNl99xxoEPN9/GQy1cw9kw0bfIHtQ5wsVL\nrTvncyfGmnt7d5AvO2ebq9HprkzRRRPrjTlQEBDNr9ZtxaDtEd4kueLspCoN\nUDWi\r\n=raRa\r\n-----END PGP SIGNATURE-----\r\n"
 }`
 
 func main() {
