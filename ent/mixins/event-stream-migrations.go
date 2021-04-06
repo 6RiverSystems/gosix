@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/pkg/errors"
+
 	"go.6river.tech/gosix/migrate"
 )
 

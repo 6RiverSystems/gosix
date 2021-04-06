@@ -17,7 +17,7 @@ endif
 # always test with race and coverage, we'll run vet separately.
 TESTARGS:=-vet=off -race -cover -coverpkg=./...
 
-GOIMPORTSARGS:=-local github.com/6RiverSystems
+GOIMPORTSARGS:=-local github.com/6RiverSystems,go.6river.tech
 
 # default `make` invocation is to run the full generate/build/lint/test sequence
 default: compile-code test
