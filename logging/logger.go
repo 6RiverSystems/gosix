@@ -55,8 +55,12 @@ func (l *Logger) Err(err error) *zerolog.Event {
 	return l.update().Err(err)
 }
 
-func (l Logger) Write(p []byte) (n int, err error) {
+func (l *Logger) Write(p []byte) (n int, err error) {
 	return l.update().Write(p)
+}
+
+func (l *Logger) WithLevel(level zerolog.Level) *zerolog.Event {
+	return l.update().WithLevel(level)
 }
 
 func (l *Logger) With(with func(zerolog.Context) zerolog.Context) *Logger {
