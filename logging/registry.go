@@ -16,6 +16,13 @@ var configGeneration int32
 var configMutex sync.Mutex
 var componentLevel = map[string]zerolog.Level{}
 
+// configLevel returns the current config generation, and the effective level
+// for a given component. Component levels should be separated with `/`
+// characters in their names. Absent any override, a component will inherit the
+// log level of the first parent for which one is configured, or else use the
+// global level.
+//
+// This function underlies logBuilders, via the contextBuilder function.
 func configLevel(component string) (generation int32, level zerolog.Level) {
 	configMutex.Lock()
 	defer configMutex.Unlock()
@@ -33,6 +40,10 @@ func configLevel(component string) (generation int32, level zerolog.Level) {
 	return c, l
 }
 
+// contextBuilder creates a logBuilder from a component name and an optional
+// zerolog.Context customization function. It will set the "component" field in
+// the context, and then allow the customizer to make any additional changes it
+// wants. This function is at the root of all composed logBuilder functions.
 func contextBuilder(component string, with func(zerolog.Context) zerolog.Context) logBuilder {
 	return func() (int32, zerolog.Logger) {
 		c, level := configLevel(component)
@@ -74,7 +85,6 @@ func SetComponentLevel(component string, children bool, level zerolog.Level) {
 			componentLevel = map[string]zerolog.Level{}
 		}
 	} else {
-		// TODO: what should this do for child components?
 		componentLevel[component] = level
 		p := component + "/"
 		for c := range componentLevel {

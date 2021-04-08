@@ -11,9 +11,6 @@ import (
 	"go.6river.tech/gosix/migrate"
 )
 
-// TODO: use go:embed to source the templates here
-// TODO: and/or embed up & down as named templates to be invoked
-
 //go:embed *.sql
 var migrationsFS embed.FS
 

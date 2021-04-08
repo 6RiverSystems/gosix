@@ -10,9 +10,14 @@ type logBuilder = func() (int32, zerolog.Logger)
 
 // Logger exists to wrap a replaceable zerolog.Logger so levels can be changed dynamically
 type Logger struct {
+	// c is the current generation value that was active when the logBuilder was
+	// last called, to fill the l field
 	c int32
+	// l is the current underlying logger
 	l zerolog.Logger
-	g logBuilder
+	// b is the builder function to make an updated logger when the config
+	// generation changes
+	b logBuilder
 }
 
 func newFrom(g logBuilder) *Logger {
@@ -20,10 +25,13 @@ func newFrom(g logBuilder) *Logger {
 	return &Logger{c, l, g}
 }
 
+// update compares the current configGeneration with the one last used to
+// refresh the underlying logger, uses the builder to refresh the logger if it
+// has changed, and returns the (new) underlying logger in either case
 func (l *Logger) update() *zerolog.Logger {
 	cc := atomic.LoadInt32(&configGeneration)
 	if cc != l.c {
-		l.c, l.l = l.g()
+		l.c, l.l = l.b()
 	}
 	return &l.l
 }
@@ -67,9 +75,10 @@ func (l *Logger) With(with func(zerolog.Context) zerolog.Context) *Logger {
 	if with == nil {
 		return l
 	}
-	// TODO: this is inefficient as it will construct multiple contexts
+	// TODO: this is inefficient as it will construct multiple contexts and
+	// loggers, by daisy chaining through any stacked layers of builders.
 	return newFrom(func() (int32, zerolog.Logger) {
-		c, ll := l.g()
+		c, ll := l.b()
 		ll = with(ll.With()).Logger()
 		return c, ll
 	})
@@ -77,7 +86,7 @@ func (l *Logger) With(with func(zerolog.Context) zerolog.Context) *Logger {
 
 func (l *Logger) Level(level zerolog.Level) *Logger {
 	return newFrom(func() (int32, zerolog.Logger) {
-		c, ll := l.g()
+		c, ll := l.b()
 		ll = ll.Level(level)
 		return c, ll
 	})

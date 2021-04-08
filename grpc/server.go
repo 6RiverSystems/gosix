@@ -50,7 +50,6 @@ func (s *grpcServer) Initialize(ctx context.Context, services *registry.Registry
 	s.logger = logging.GetLogger("server/grpc/" + strconv.Itoa(s.realPort))
 
 	if s.opts == nil {
-		// TODO: add logging & prometheus interceptors
 		s.opts = []grpc.ServerOption{
 			grpc.ChainUnaryInterceptor(
 				s.logUnary,

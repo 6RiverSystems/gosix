@@ -213,8 +213,6 @@ func (m *Migrator) loadStates(
 		ret = append(ret, s)
 	}
 
-	// TODO: sort?
-
 	return ret, nil
 }
 

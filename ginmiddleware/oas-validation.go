@@ -55,9 +55,8 @@ func WithOASValidation(
 			return
 		}
 
-		// setup body capture for response validation
-		// TODO: refactor this to common code
-		// don't let the body pass through as we may need to replace it if there are errors
+		// setup body capture for response validation: don't let the body pass
+		// through as we may need to replace it if there are errors
 		bodyCapture, realWriter := CaptureResponseBody(c, false)
 
 		c.Next()

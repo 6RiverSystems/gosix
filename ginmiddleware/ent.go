@@ -12,10 +12,6 @@ import (
 var entClientKeyBase = "ent-client-"
 var entTxKeyBase = "ent-tx-"
 
-// TODO: most of this could be made generic by declaring some simple interface
-// types, and then would just need apps to have a thin shim to wrap the generic
-// with their particular types
-
 func WithEntClient(client ent.EntClient, name string) gin.HandlerFunc {
 	key := entClientKeyBase + name
 	return func(c *gin.Context) {
