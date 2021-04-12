@@ -3,6 +3,7 @@ package registry
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"golang.org/x/sync/errgroup"
@@ -130,17 +131,24 @@ func (r *Registry) WaitAllReady(ctx context.Context) error {
 	return nil
 }
 
+var ServiceNotFoundError = fmt.Errorf("service not found")
+
 func (r *Registry) WaitReadyByName(ctx context.Context, name string) error {
 	if !r.ServicesStarted() {
 		panic(errors.New("Cannot wait for services to be ready until they have been started"))
 	}
+	found := false
 	for i := range r.allReadies {
 		if r.allServices[i].Name() != name {
 			continue
 		}
+		found = true
 		if err := r.waitReady(ctx, ServiceTag(i)); err != nil {
 			return err
 		}
+	}
+	if !found {
+		return ServiceNotFoundError
 	}
 	return nil
 }
