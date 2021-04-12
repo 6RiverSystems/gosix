@@ -122,40 +122,62 @@ func (r *Registry) WaitAllReady(ctx context.Context) error {
 	if !r.ServicesStarted() {
 		panic(errors.New("Cannot wait for services to be ready until they have been started"))
 	}
-	for i, ready := range r.allReadies {
-	READY:
-		for {
-			select {
-			case <-ctx.Done():
-				err := ctx.Err()
-				if errors.Is(err, context.DeadlineExceeded) {
-					r.logger().Error().
-						Int("serviceTag", i).
-						Str("service", r.allServices[i].Name()).
-						Msg("Timed out waiting for service to be ready")
-				}
-				return err
-			case <-r.runningCtx.Done():
-				err := r.runningGroup.Wait()
-				if err != nil {
-					r.logger().Error().
-						Err(err).
-						Int("serviceTag", i).
-						Str("service", r.allServices[i].Name()).
-						Msg("Services failed while waiting for service to be ready")
-				}
-				return err
-			case <-time.After(time.Second):
-				r.logger().Warn().
-					Int("serviceTag", i).
-					Str("service", r.allServices[i].Name()).
-					Msg("Service is slow to get ready")
-			case <-ready:
-				break READY
-			}
+	for i := range r.allReadies {
+		if err := r.waitReady(ctx, ServiceTag(i)); err != nil {
+			return err
 		}
 	}
 	return nil
+}
+
+func (r *Registry) WaitReadyByName(ctx context.Context, name string) error {
+	if !r.ServicesStarted() {
+		panic(errors.New("Cannot wait for services to be ready until they have been started"))
+	}
+	for i := range r.allReadies {
+		if r.allServices[i].Name() != name {
+			continue
+		}
+		if err := r.waitReady(ctx, ServiceTag(i)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (r *Registry) waitReady(ctx context.Context, tag ServiceTag) error {
+	s := r.allServices[tag]
+	ready := r.allReadies[tag]
+	for {
+		select {
+		case <-ctx.Done():
+			err := ctx.Err()
+			if errors.Is(err, context.DeadlineExceeded) {
+				r.logger().Error().
+					Int("serviceTag", int(tag)).
+					Str("service", s.Name()).
+					Msg("Timed out waiting for service to be ready")
+			}
+			return err
+		case <-r.runningCtx.Done():
+			err := r.runningGroup.Wait()
+			if err != nil {
+				r.logger().Error().
+					Err(err).
+					Int("serviceTag", int(tag)).
+					Str("service", s.Name()).
+					Msg("Services failed while waiting for service to be ready")
+			}
+			return err
+		case <-time.After(time.Second):
+			r.logger().Warn().
+				Int("serviceTag", int(tag)).
+				Str("service", s.Name()).
+				Msg("Service is slow to get ready")
+		case <-ready:
+			return nil
+		}
+	}
 }
 
 // WaitServices will wait for the running services, if any, to all end. It will

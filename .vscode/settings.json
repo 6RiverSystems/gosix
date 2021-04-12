@@ -5,7 +5,6 @@
 	"go.buildOnSave": "workspace",
 	"go.autocompleteUnimportedPackages": true,
 	"go.lintTool": "golangci-lint",
-	"go.formatTool": "goreturns",
 	"go.generateTestsFlags": [
 		"-template=testify"
 	],
