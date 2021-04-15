@@ -53,3 +53,33 @@ func TestParsePostgreSQLInterval(t *testing.T) {
 		})
 	}
 }
+
+func TestInterval_Scan(t *testing.T) {
+	tests := []struct {
+		name            string
+		src             interface{}
+		errAssertion    assert.ErrorAssertionFunc
+		resultAssertion func(t *testing.T, i Interval)
+	}{
+		// TODO: Duration
+		// TODO: *Duration
+		// TODO: int64
+		// TODO: *in64
+		{
+			"string hms",
+			"1h0m0s",
+			assert.NoError,
+			func(t *testing.T, i Interval) {
+				assert.Equal(t, time.Hour, time.Duration(i))
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var i Interval
+			if tt.errAssertion(t, i.Scan(tt.src)) {
+				tt.resultAssertion(t, i)
+			}
+		})
+	}
+}

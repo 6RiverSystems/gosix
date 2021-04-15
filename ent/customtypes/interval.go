@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"math"
 	"regexp"
 	"strconv"
@@ -12,16 +13,16 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// TODO: this should be just a direct type, but ent code generation generates
-// invalid code for that case, so it has to be a struct
-type Interval struct {
-	time.Duration
-}
+type Interval time.Duration
 
-var _ driver.Valuer = Interval{}
+var _ driver.Valuer = Interval(0)
 var _ field.ValueScanner = (*Interval)(nil)
-var _ json.Marshaler = Interval{}
+var _ json.Marshaler = Interval(0)
 var _ json.Unmarshaler = (*Interval)(nil)
+
+func (i Interval) String() string {
+	return time.Duration(i).String()
+}
 
 func (i Interval) Value() (driver.Value, error) {
 	// PostgreSQL understands Go's duration string format
@@ -31,19 +32,21 @@ func (i Interval) Value() (driver.Value, error) {
 func (i *Interval) Scan(src interface{}) error {
 	switch s := src.(type) {
 	case time.Duration:
-		i.Duration = s
+		*i = Interval(s)
 	case *time.Duration:
-		i.Duration = *s
+		*i = Interval(*s)
 	case int64:
-		i.Duration = time.Duration(s)
+		*i = Interval(time.Duration(s))
 	case *int64:
-		i.Duration = time.Duration(*s)
+		*i = Interval(time.Duration(*s))
 	case string:
-		var err error
-		i.Duration, err = ParsePostgreSQLInterval(s)
+		d, err := ParsePostgreSQLInterval(s)
+		if err == nil {
+			*i = Interval(d)
+		}
 		return err
 	default:
-		return errors.New("Unsupported scan type")
+		return fmt.Errorf("Unsupported scan type: %T", src)
 	}
 	return nil
 }
@@ -58,16 +61,15 @@ func (i *Interval) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	i.Duration, err = ParsePostgreSQLInterval(s)
+	d, err := ParsePostgreSQLInterval(s)
+	if err != nil {
+		*i = Interval(d)
+	}
 	return err
 }
 
-func FromDuration(d time.Duration) Interval {
-	return Interval{d}
-}
-
-func (i Interval) AsNullable() IntervalNull {
-	return IntervalNull{&i.Duration}
+func (i Interval) AsNullable() *NullInterval {
+	return &NullInterval{true, i}
 }
 
 // parses a string in postgresql format as an interval (duration).
