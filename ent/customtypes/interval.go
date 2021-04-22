@@ -45,6 +45,10 @@ func (i *Interval) Scan(src interface{}) error {
 			*i = Interval(d)
 		}
 		return err
+	case nil:
+		// we need to be able to scan `nil` values even with ent's NullScanner in
+		// place
+		*i = 0
 	default:
 		return fmt.Errorf("Unsupported scan type: %T", src)
 	}
@@ -68,8 +72,9 @@ func (i *Interval) UnmarshalJSON(data []byte) error {
 	return err
 }
 
-func (i Interval) AsNullable() *NullInterval {
-	return &NullInterval{true, i}
+func IntervalPtr(duration time.Duration) *Interval {
+	ret := Interval(duration)
+	return &ret
 }
 
 // parses a string in postgresql format as an interval (duration).
