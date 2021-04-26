@@ -45,7 +45,7 @@ func (s *grpcServer) Name() string {
 	}
 }
 
-func (s *grpcServer) Initialize(ctx context.Context, services *registry.Registry, client ent.EntClient) error {
+func (s *grpcServer) Initialize(ctx context.Context, reg *registry.Registry, client ent.EntClient) error {
 	s.realPort = server.ResolvePort(s.defaultPort, s.offset)
 	s.logger = logging.GetLogger("server/grpc/" + strconv.Itoa(s.realPort))
 
@@ -53,10 +53,12 @@ func (s *grpcServer) Initialize(ctx context.Context, services *registry.Registry
 		grpc.ChainUnaryInterceptor(
 			s.logUnary,
 			grpc_prometheus.UnaryServerInterceptor,
+			UnaryFaultInjector(reg.Faults()),
 		),
 		grpc.ChainStreamInterceptor(
 			s.logStream,
 			grpc_prometheus.StreamServerInterceptor,
+			StreamFaultInjector(reg.Faults()),
 		),
 	}
 	if s.opts != nil {
@@ -70,7 +72,7 @@ func (s *grpcServer) Initialize(ctx context.Context, services *registry.Registry
 	s.server = grpc.NewServer(opts...)
 
 	for _, i := range s.initializers {
-		if err := i(ctx, s.server, services, client); err != nil {
+		if err := i(ctx, s.server, reg, client); err != nil {
 			return err
 		}
 	}
