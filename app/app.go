@@ -96,7 +96,7 @@ func (app *App) WithDefaults() *App {
 	}
 	if app.Registry == nil {
 		app.Registry = registry.New(app.Name)
-		app.Bind(registry.ServicesKey, registry.ConstantValue(app.Registry))
+		app.Bind(registry.RegistryKey, registry.ConstantValue(app.Registry))
 	}
 	return app
 }
