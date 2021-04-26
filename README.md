@@ -26,4 +26,4 @@ There are other `make` targets to run individual steps as well
 ## Using
 
 See the 6RiverSystems/gosix-example repo for a simple app built using this
-framework.
+framework, or the `docs` directory here for more details.
