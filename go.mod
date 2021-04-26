@@ -3,7 +3,7 @@ module go.6river.tech/gosix
 go 1.16
 
 require (
-	cloud.google.com/go/pubsub v1.10.1
+	cloud.google.com/go/pubsub v1.10.2
 	entgo.io/ent v0.8.0
 	github.com/Depado/ginprom v1.7.0
 	github.com/chavacava/garif v0.0.0-20210405164556-e8a0a408d6af // indirect
