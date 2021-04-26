@@ -4,9 +4,11 @@ import (
 	"context"
 	"sync"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/sync/errgroup"
 
 	"go.6river.tech/gosix/ent"
+	"go.6river.tech/gosix/faults"
 	"go.6river.tech/gosix/logging"
 )
 
@@ -14,6 +16,7 @@ type Registry struct {
 	svcMu       sync.Mutex
 	allServices []Service
 	allReadies  []chan struct{}
+	faults      *faults.Set
 
 	ctlMu          sync.Mutex
 	allControllers []Controller
@@ -26,6 +29,14 @@ type Registry struct {
 
 	_logger     *logging.Logger
 	_loggerOnce sync.Once
+}
+
+func New(appName string) *Registry {
+	ret := &Registry{
+		faults: faults.NewSet(appName),
+	}
+	ret.faults.MustRegister(prometheus.DefaultRegisterer)
+	return ret
 }
 
 var ServicesKey = PointerAt("services", (*Registry)(nil))
