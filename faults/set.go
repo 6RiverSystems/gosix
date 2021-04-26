@@ -1,6 +1,7 @@
 package faults
 
 import (
+	"strings"
 	"sync"
 	"sync/atomic"
 
@@ -21,6 +22,10 @@ type Set struct {
 }
 
 func NewSet(appName string) *Set {
+	// sanitize appName for prometheus
+	appName = strings.ReplaceAll(appName, "-", "_")
+	appName = strings.ReplaceAll(appName, "/", "_")
+
 	ret := &Set{
 		mu:     sync.RWMutex{},
 		faults: map[string][]*Description{},
