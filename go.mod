@@ -3,12 +3,12 @@ module go.6river.tech/gosix
 go 1.16
 
 require (
-	cloud.google.com/go/pubsub v1.10.1
+	cloud.google.com/go/pubsub v1.10.2
 	entgo.io/ent v0.8.1-0.20210420114431-91dda6230f8e
 	github.com/Depado/ginprom v1.7.0
 	github.com/chavacava/garif v0.0.0-20210405164556-e8a0a408d6af // indirect
-	github.com/deepmap/oapi-codegen v1.6.0
-	github.com/getkin/kin-openapi v0.53.0
+	github.com/deepmap/oapi-codegen v1.6.1
+	github.com/getkin/kin-openapi v0.60.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/location v0.0.2
@@ -57,8 +57,8 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/tools v0.1.1-0.20210302220138-2ac05c832e1a
-	google.golang.org/api v0.44.0
-	google.golang.org/genproto v0.0.0-20210406143921-e86de6bf7a46 // indirect
+	google.golang.org/api v0.45.0
 	google.golang.org/grpc v1.37.0
+	google.golang.org/protobuf v1.26.0
 	gopkg.in/ini.v1 v1.62.0 // indirect
 )

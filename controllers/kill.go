@@ -38,6 +38,6 @@ func (k *KillController) HandleShutdown(c *gin.Context) {
 func shutdownHelpers(c *gin.Context) (*http.Server, *registry.Registry) {
 	s := server.HttpServer(c)
 	vs := server.Values(c)
-	services, _ := registry.Services(vs)
-	return s, services
+	reg, _ := registry.GetRegistry(vs)
+	return s, reg
 }
