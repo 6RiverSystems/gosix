@@ -8,7 +8,7 @@ require (
 	github.com/Depado/ginprom v1.7.0
 	github.com/chavacava/garif v0.0.0-20210405164556-e8a0a408d6af // indirect
 	github.com/deepmap/oapi-codegen v1.6.0
-	github.com/getkin/kin-openapi v0.53.0
+	github.com/getkin/kin-openapi v0.60.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/location v0.0.2
