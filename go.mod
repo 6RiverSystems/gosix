@@ -5,7 +5,7 @@ go 1.16
 require (
 	cloud.google.com/go/pubsub v1.10.3
 	entgo.io/ent v0.8.0
-	github.com/Depado/ginprom v1.7.0
+	github.com/Depado/ginprom v1.7.1
 	github.com/chavacava/garif v0.0.0-20210405164556-e8a0a408d6af // indirect
 	github.com/deepmap/oapi-codegen v1.6.1
 	github.com/getkin/kin-openapi v0.60.0
