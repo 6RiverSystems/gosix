@@ -51,7 +51,7 @@ type App struct {
 
 	// LoadOASSpec provides a hook for enabling OAS validation middleware, using
 	// the returned swagger spec.
-	LoadOASSpec func(ctx context.Context) (*openapi3.Swagger, error)
+	LoadOASSpec func(ctx context.Context) (*openapi3.T, error)
 
 	// OASFS specifies a "filesystem" to use for the `/oas` route, to serve
 	// swagger specs to the swagger-ui (and thus this field enables the swagger-ui

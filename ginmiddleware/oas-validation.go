@@ -14,14 +14,14 @@ import (
 type OASErrorHandler func(c *gin.Context, err error)
 
 func WithOASValidation(
-	swagger *openapi3.Swagger,
+	spec *openapi3.T,
 	validateResponse bool,
 	errorHandler OASErrorHandler,
 	options *openapi3filter.Options,
 ) gin.HandlerFunc {
-	oasRouter, err := legacy.NewRouter(swagger)
+	oasRouter, err := legacy.NewRouter(spec)
 	if err != nil {
-		panic(errors.Wrap(err, "unable to create a router for the given swagger schema"))
+		panic(errors.Wrap(err, "unable to create a router for the given openapi schema"))
 	}
 	if errorHandler == nil {
 		errorHandler = DefaultOASErrorHandler
