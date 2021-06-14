@@ -34,8 +34,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.12 // indirect
 	github.com/pelletier/go-toml v1.9.0 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.10.0
-	github.com/prometheus/common v0.20.0 // indirect
+	github.com/prometheus/client_golang v1.11.0
 	github.com/quasilyte/regex/syntax v0.0.0-20200805063351-8f842688393c // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rs/cors v1.7.0
