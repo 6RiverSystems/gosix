@@ -120,8 +120,6 @@ func (app *App) Main() (err error) {
 
 	// setup default prometheus metrics
 	prometheus.DefaultRegisterer.MustRegister(collectors.NewBuildInfoCollector())
-	prometheus.DefaultRegisterer.MustRegister(collectors.NewGoCollector())
-	prometheus.DefaultRegisterer.MustRegister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
