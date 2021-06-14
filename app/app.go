@@ -15,11 +15,12 @@ import (
 	ginexpvar "github.com/gin-contrib/expvar"
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"google.golang.org/grpc"
 
 	"go.6river.tech/gosix/controllers"
 	"go.6river.tech/gosix/db"
-	"go.6river.tech/gosix/db/metrics"
 	"go.6river.tech/gosix/ent"
 	"go.6river.tech/gosix/ginmiddleware"
 	grpccommon "go.6river.tech/gosix/grpc"
@@ -218,11 +219,7 @@ func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Dr
 		return client, err
 	}
 	// Setup db prometheus metrics
-	metrics.MonitorDB(
-		drv.DB(),
-		map[string]string{"orm": "ent", "name": db.GetDefaultDbName()},
-		time.Second,
-	)
+	prometheus.DefaultRegisterer.MustRegister(collectors.NewDBStatsCollector(drv.DB(), db.GetDefaultDbName()))
 
 	m := &migrate.Migrator{}
 	if app.InitDbMigration != nil {
