@@ -118,6 +118,11 @@ func (app *App) Main() (err error) {
 	// report the app version as an expvar
 	expvar.NewString("version/" + app.Name).Set(app.Version)
 
+	// setup default prometheus metrics
+	prometheus.DefaultRegisterer.MustRegister(collectors.NewBuildInfoCollector())
+	prometheus.DefaultRegisterer.MustRegister(collectors.NewGoCollector())
+	prometheus.DefaultRegisterer.MustRegister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	// TODO: should we expose a cached view instead here?
