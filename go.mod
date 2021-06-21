@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	cloud.google.com/go/pubsub v1.11.0
-	entgo.io/ent v0.8.1-0.20210520103905-da20bba97dca
+	entgo.io/ent v0.8.1-0.20210621145950-50042656660b
 	github.com/Depado/ginprom v1.7.1
 	github.com/deepmap/oapi-codegen v1.6.2-0.20210518204851-ad14913053d1
 	github.com/getkin/kin-openapi v0.63.0

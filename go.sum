@@ -49,8 +49,8 @@ cloud.google.com/go/storage v1.8.0/go.mod h1:Wv1Oy7z6Yz3DshWRJFhqM/UCfaWIRTdp0RX
 cloud.google.com/go/storage v1.10.0/go.mod h1:FLPqc6j+Ki4BU591ie1oL6qBQGu2Bl/tZ9ullr3+Kg0=
 contrib.go.opencensus.io/exporter/stackdriver v0.13.4/go.mod h1:aXENhDJ1Y4lIg4EUaVTwzvYETVNZk10Pu26tevFKLUc=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
-entgo.io/ent v0.8.1-0.20210520103905-da20bba97dca h1:kS2wV+DIzj3bDNhg8wha8fCm+yVO/vDhXtdg0ywrZPc=
-entgo.io/ent v0.8.1-0.20210520103905-da20bba97dca/go.mod h1:ip4404vuyzWgDtvSQLNHSIf7U+EplCqJ77vKELUq8KA=
+entgo.io/ent v0.8.1-0.20210621145950-50042656660b h1:T0JW4nZUGI/FAE9Giqj/4tPtL8n2NN+dDwyo7EwEKuY=
+entgo.io/ent v0.8.1-0.20210621145950-50042656660b/go.mod h1:SJjBmzwzo8UJo2bMoMw1bAstexzGcwfnIHeB+Rzr4p8=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
