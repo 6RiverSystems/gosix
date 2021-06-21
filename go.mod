@@ -6,7 +6,6 @@ require (
 	cloud.google.com/go/pubsub v1.11.0
 	entgo.io/ent v0.8.1-0.20210520103905-da20bba97dca
 	github.com/Depado/ginprom v1.7.1
-	github.com/chavacava/garif v0.0.0-20210405164556-e8a0a408d6af // indirect
 	github.com/deepmap/oapi-codegen v1.6.2-0.20210518204851-ad14913053d1
 	github.com/getkin/kin-openapi v0.63.0
 	github.com/gin-contrib/expvar v0.0.1
@@ -17,7 +16,7 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/validator/v10 v10.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/golangci/golangci-lint v1.40.1
+	github.com/golangci/golangci-lint v1.41.1
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect
@@ -46,7 +45,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/ugorji/go v1.2.5 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/tools v0.1.2
+	golang.org/x/tools v0.1.3
 	google.golang.org/api v0.48.0
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.26.0
