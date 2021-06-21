@@ -1,8 +1,10 @@
 package server
 
 import (
+	"io"
 	_ "net/http/pprof"
 	"os"
+	"time"
 
 	"github.com/Depado/ginprom"
 	"github.com/gin-contrib/gzip"
@@ -15,6 +17,7 @@ import (
 
 	// gin-gonic's cors module is a mess
 	cors "github.com/rs/cors/wrapper/gin"
+	"github.com/rs/zerolog"
 )
 
 func NewEngine() *gin.Engine {
@@ -50,12 +53,13 @@ func NewEngine() *gin.Engine {
 	r := gin.New()
 
 	// attach custom logging
-	// FIXME: this logger won't see level changes, would need to make our own lib
-	requestLogger := logging.GetLogger("gin/request").Current()
-	r.Use(logger.SetLogger(logger.Config{
-		Logger: &requestLogger,
-		UTC:    true,
-	}))
+	requestLogger := logging.GetLogger("gin/request")
+	r.Use(logger.SetLogger(
+		logger.WithLogger(func(c *gin.Context, w io.Writer, d time.Duration) zerolog.Logger {
+			return requestLogger.Current()
+		}),
+		logger.WithUTC(true),
+	))
 
 	// Set up prometheus, before recovery so it can see the recovered responses
 	p := ginprom.New(
