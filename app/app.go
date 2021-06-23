@@ -189,9 +189,9 @@ func (app *App) PubsubClient() (pubsub.Client, bool) {
 }
 
 func (app *App) openDB(ctx context.Context, logger *logging.Logger) (drv *sql.Driver, err error) {
-	// for 6mon friendliness, wait for up to 30 seconds for a db connection
+	// for 6mon friendliness, wait for up to 120 seconds for a db connection
 	if err = func() error {
-		dbWaitCtx, dbWaitCancel := context.WithDeadline(ctx, time.Now().Add(30*time.Second))
+		dbWaitCtx, dbWaitCancel := context.WithDeadline(ctx, time.Now().Add(120*time.Second))
 		defer dbWaitCancel()
 		return db.WaitForDB(dbWaitCtx)
 	}(); err != nil {
