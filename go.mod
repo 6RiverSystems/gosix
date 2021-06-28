@@ -15,7 +15,6 @@ require (
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/validator/v10 v10.5.0 // indirect
-	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golangci/golangci-lint v1.41.1
 	github.com/google/uuid v1.2.0
