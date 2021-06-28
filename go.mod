@@ -15,13 +15,14 @@ require (
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/validator/v10 v10.5.0 // indirect
+	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golangci/golangci-lint v1.41.1
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.4.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/jackc/pgconn v1.8.1
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
