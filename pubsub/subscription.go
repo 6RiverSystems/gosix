@@ -20,6 +20,7 @@ type SubscriptionCommon interface {
 	Delete(context.Context) error
 	Exists(context.Context) (bool, error)
 	Update(context.Context, pubsub.SubscriptionConfigToUpdate) (pubsub.SubscriptionConfig, error)
+	SeekToTime(ctx context.Context, t time.Time) error
 }
 type Subscription interface {
 	SubscriptionCommon
