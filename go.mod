@@ -17,7 +17,7 @@ require (
 	github.com/go-playground/validator/v10 v10.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golangci/golangci-lint v1.41.1
-	github.com/google/addlicense v0.0.0-20210428195630-6d92264d7170 // indirect
+	github.com/google/addlicense v0.0.0-20210428195630-6d92264d7170
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect

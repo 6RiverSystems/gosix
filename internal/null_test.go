@@ -17,7 +17,7 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-//+build ignore
+//+build xyzzy
 
 // this file just exists so that our linting-related dependencies won't get
 // tidied out of go.mod. Some of these things aren't actually importable
