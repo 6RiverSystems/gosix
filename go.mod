@@ -7,7 +7,7 @@ require (
 	entgo.io/ent v0.9.0
 	github.com/Depado/ginprom v1.7.1
 	github.com/deepmap/oapi-codegen v1.8.2
-	github.com/getkin/kin-openapi v0.69.0
+	github.com/getkin/kin-openapi v0.70.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/location v0.0.2
