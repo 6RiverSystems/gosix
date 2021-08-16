@@ -3,21 +3,21 @@ module go.6river.tech/gosix
 go 1.16
 
 require (
-	cloud.google.com/go/pubsub v1.13.0
+	cloud.google.com/go/pubsub v1.15.0
 	entgo.io/ent v0.9.0
 	github.com/Depado/ginprom v1.7.1
 	github.com/deepmap/oapi-codegen v1.8.2
-	github.com/getkin/kin-openapi v0.70.0
+	github.com/getkin/kin-openapi v0.74.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/location v0.0.2
 	github.com/gin-contrib/logger v0.2.0
-	github.com/gin-gonic/gin v1.7.3
+	github.com/gin-gonic/gin v1.7.4
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golangci/golangci-lint v1.41.1
-	github.com/google/addlicense v0.0.0-20210729153508-ef04bb38a16b
+	github.com/google/addlicense v0.0.0-20210814210922-2fe3ee94479d
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect
@@ -38,15 +38,15 @@ require (
 	github.com/rs/cors v1.8.0
 	github.com/rs/zerolog v1.23.0
 	github.com/spf13/afero v1.6.0 // indirect
-	github.com/spf13/cast v1.4.0 // indirect
+	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/ugorji/go v1.2.6 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.5
-	google.golang.org/api v0.52.0
-	google.golang.org/grpc v1.39.1
+	google.golang.org/api v0.54.0
+	google.golang.org/grpc v1.40.0
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/ini.v1 v1.62.0 // indirect
 )
