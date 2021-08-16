@@ -43,9 +43,7 @@ get:
 
 install-ci-tools:
 # tools only needed in CI
-# can't install this with go install yet: https://github.com/gotestyourself/gotestsum/issues/176
-# use a temp dir to avoid messing with repo go.mod/go.sum
-	td=$$(mktemp -d) && cd $$td/ && go mod init install-gotestsum && go get gotest.tools/gotestsum@latest && rm -rf $$td/
+	go install gotest.tools/gotestsum
 tools:
 	mkdir -p ./tools
 	GOBIN=$(PWD)/tools go install github.com/golangci/golangci-lint/cmd/golangci-lint
