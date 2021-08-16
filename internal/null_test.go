@@ -29,4 +29,5 @@ import (
 	_ "github.com/golangci/golangci-lint/pkg/commands"
 	_ "github.com/google/addlicense"
 	_ "golang.org/x/tools/imports"
+	_ "gotest.tools/gotestsum/cmd"
 )
