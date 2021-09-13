@@ -23,6 +23,7 @@ import "cloud.google.com/go/pubsub"
 
 type SubscriptionIterator interface {
 	Next() (Subscription, error)
+	NextConfig() (*pubsub.SubscriptionConfig, error)
 }
 
 // var _ SubscriptionIterator = &pubsub.SubscriptionIterator{} // doesn't work because of interface return
@@ -47,6 +48,7 @@ func (i *monitoredSubscriptionIterator) NextConfig() (*pubsub.SubscriptionConfig
 
 type TopicIterator interface {
 	Next() (Topic, error)
+	NextConfig() (*pubsub.TopicConfig, error)
 }
 
 // var _ TopicIterator = &pubsub.TopicIterator{} // doesn't work because of interface return
