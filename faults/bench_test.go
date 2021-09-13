@@ -55,7 +55,7 @@ func Benchmark_Check_empty_miss_small_params_pre(b *testing.B) {
 
 func Benchmark_Check_filled_miss_nil_params(b *testing.B) {
 	s := NewSet(b.Name())
-	s.Add(Description{"op1", nil, nil, 1})
+	s.Add(Description{"op1", nil, nil, 1, "grpc.NotFound"})
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		if s.Check("op2", nil) != nil {
@@ -66,7 +66,7 @@ func Benchmark_Check_filled_miss_nil_params(b *testing.B) {
 
 func Benchmark_Check_filled_miss_pval_small_params_pre(b *testing.B) {
 	s := NewSet(b.Name())
-	s.Add(Description{"op", Parameters{"a": "1"}, nil, 1})
+	s.Add(Description{"op", Parameters{"a": "1"}, nil, 1, "grpc.NotFound"})
 	p := Parameters{"a": "2"}
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
@@ -77,7 +77,7 @@ func Benchmark_Check_filled_miss_pval_small_params_pre(b *testing.B) {
 }
 func Benchmark_Check_filled_miss_pname_small_params_pre(b *testing.B) {
 	s := NewSet(b.Name())
-	s.Add(Description{"op", Parameters{"a": "1"}, nil, 1})
+	s.Add(Description{"op", Parameters{"a": "1"}, nil, 1, "grpc.NotFound"})
 	p := Parameters{"b": "1"}
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {

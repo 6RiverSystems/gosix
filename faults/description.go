@@ -36,6 +36,7 @@ type Description struct {
 	Parameters Parameters
 	OnFault    func(Description, Parameters) error
 	Count      int64
+	Error      string
 }
 
 func (d *Description) match(op string, params Parameters) bool {

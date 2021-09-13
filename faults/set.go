@@ -181,7 +181,7 @@ func (s *Set) Check(op string, params Parameters) error {
 
 		// careful copying to avoid data race errors, don't need to copy the fault
 		// func we're about to call
-		dd := Description{d.Operation, d.Parameters, nil, remaining}
+		dd := Description{d.Operation, d.Parameters, nil, remaining, d.Error}
 		// we pass the description by value here intentionally so the fault handler
 		// cannot modify it
 		ret = d.OnFault(dd, params)
@@ -218,7 +218,7 @@ func (s *Set) Current() map[string][]Description {
 		ll := make([]Description, 0, len(l))
 		for _, d := range l {
 			// make a copy before we look at it
-			dd := Description{d.Operation, d.Parameters, d.OnFault, atomic.LoadInt64(&d.Count)}
+			dd := Description{d.Operation, d.Parameters, d.OnFault, atomic.LoadInt64(&d.Count), d.Error}
 			if dd.Count > 0 {
 				ll = append(ll, dd)
 			}
