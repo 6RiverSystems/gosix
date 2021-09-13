@@ -32,11 +32,11 @@ type Parameters = map[string]string
 // one Description is executed for a given invocation. If multiple match, which
 // runs is undefined.
 type Description struct {
-	Operation  string
-	Parameters Parameters
-	OnFault    func(Description, Parameters) error
-	Count      int64
-	Error      string
+	Operation        string
+	Parameters       Parameters
+	OnFault          func(Description, Parameters) error
+	Count            int64
+	FaultDescription string
 }
 
 func (d *Description) match(op string, params Parameters) bool {
