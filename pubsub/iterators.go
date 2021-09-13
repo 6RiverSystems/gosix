@@ -41,6 +41,10 @@ func (i *monitoredSubscriptionIterator) Next() (Subscription, error) {
 	return i.c.monitorSubscription(s), nil
 }
 
+func (i *monitoredSubscriptionIterator) NextConfig() (*pubsub.SubscriptionConfig, error) {
+	return i.SubscriptionIterator.NextConfig()
+}
+
 type TopicIterator interface {
 	Next() (Topic, error)
 }
@@ -59,4 +63,8 @@ func (i *monitoredTopicIterator) Next() (Topic, error) {
 		return nil, err
 	}
 	return i.c.monitorTopic(s), nil
+}
+
+func (i *monitoredTopicIterator) NextConfig() (*pubsub.TopicConfig, error) {
+	return i.TopicIterator.NextConfig()
 }
