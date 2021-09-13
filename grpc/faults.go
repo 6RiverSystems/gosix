@@ -63,7 +63,6 @@ func paramsFromProtoMessage(service, method string, req interface{}) faults.Para
 	params[service] = method
 	if pr, ok := req.(protoreflect.ProtoMessage); ok {
 		m := pr.ProtoReflect()
-		params[service] = method
 		m.Range(func(fd protoreflect.FieldDescriptor, v protoreflect.Value) bool {
 			if fd.Kind() == protoreflect.StringKind && fd.Cardinality() != protoreflect.Repeated {
 				sv := v.String()
