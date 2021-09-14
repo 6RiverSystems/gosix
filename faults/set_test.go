@@ -129,7 +129,7 @@ func TestSet_Check(t *testing.T) {
 			map[string][]*Description{
 				"op": {&Description{"op", nil, func(desc Description, params Parameters) error {
 					return &faultWrap{desc, params}
-				}, 1}},
+				}, 1, "grpc.NotFound"}},
 			},
 			args{"op", nil},
 			func(tt assert.TestingT, e error, i ...interface{}) bool {
@@ -179,7 +179,7 @@ func TestSet_Check_Race(t *testing.T) {
 			return nil
 		}
 		s := NewSet(t.Name() + strconv.Itoa(n))
-		s.faults["op"] = []*Description{{"op", nil, onFault, 1}}
+		s.faults["op"] = []*Description{{"op", nil, onFault, 1, "grpc.NotFound"}}
 		wg := &sync.WaitGroup{}
 		wg.Add(concurrent)
 		// use a wee spinlock to get all the goroutines to wake up as close to the
