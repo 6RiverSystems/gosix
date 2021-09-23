@@ -23,6 +23,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net"
 	"net/url"
 	"os"
 	"strings"
@@ -214,7 +215,10 @@ RETRY:
 
 		retriable := false
 		var errno syscall.Errno
+		var netErr net.Error
 		if errors.As(err, &errno) && errno == syscall.ECONNREFUSED {
+			retriable = true
+		} else if errors.As(err, &netErr) && netErr.Timeout() {
 			retriable = true
 		} else if _, ok := postgres.IsPostgreSQLErrorCode(err, postgres.CannotConnectNow); ok {
 			// database startup in progress
