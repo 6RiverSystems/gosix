@@ -7,7 +7,7 @@ require (
 	entgo.io/ent v0.9.1
 	github.com/Depado/ginprom v1.7.2
 	github.com/deepmap/oapi-codegen v1.8.3
-	github.com/getkin/kin-openapi v0.78.0
+	github.com/getkin/kin-openapi v0.79.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/location v0.0.2
@@ -24,7 +24,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.11.0
-	github.com/quasilyte/go-ruleguard/dsl v0.3.8
+	github.com/quasilyte/go-ruleguard/dsl v0.3.10
 	github.com/rs/cors v1.8.0
 	github.com/rs/zerolog v1.25.0
 	github.com/stretchr/testify v1.7.0
