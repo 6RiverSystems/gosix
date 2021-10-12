@@ -24,7 +24,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.11.0
-	github.com/quasilyte/go-ruleguard/dsl v0.3.6
+	github.com/quasilyte/go-ruleguard/dsl v0.3.8
 	github.com/rs/cors v1.8.0
 	github.com/rs/zerolog v1.25.0
 	github.com/stretchr/testify v1.7.0
