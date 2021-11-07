@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/pubsub v1.17.1
 	entgo.io/ent v0.9.1
 	github.com/Depado/ginprom v1.7.2
-	github.com/deepmap/oapi-codegen v1.8.3
+	github.com/deepmap/oapi-codegen v1.9.0
 	github.com/getkin/kin-openapi v0.80.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.3
@@ -194,11 +194,11 @@ require (
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/yeya24/promlinter v0.1.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/mod v0.5.0 // indirect
 	golang.org/x/net v0.0.0-20210908191846-a5e095526f91 // indirect
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1 // indirect
-	golang.org/x/sys v0.0.0-20211025201205-69cdffdb9359 // indirect
+	golang.org/x/sys v0.0.0-20211031064116-611d5d643895 // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
