@@ -51,7 +51,7 @@ var (
 func DefaultDbUrl() string {
 	url := os.Getenv("DATABASE_URL")
 	if url != "" {
-		return url
+		return ApplyPgAppName(url)
 	}
 
 	// TODO: don't use NODE_ENV for things that aren't nodejs
@@ -72,11 +72,44 @@ func DefaultDbUrl() string {
 	}
 
 	// generate something like postgres://localhost/foo_development
-	return PostgreSQLDSN(env)
+	return ApplyPgAppName(PostgreSQLDSN(env))
 }
 
 func PostgreSQLDSN(suffix string) string {
 	return fmt.Sprintf("postgres://6river:6river@localhost/%s_%s?sslmode=disable", defaultDbName, suffix)
+}
+
+func ApplyPgAppName(dbUrl string) string {
+	parsed, err := url.Parse(dbUrl)
+	if err != nil {
+		// TODO: don't panic
+		panic(err)
+	}
+	q, err := url.ParseQuery(parsed.RawQuery)
+	if err != nil {
+		// TODO: don't panic
+		panic(err)
+	}
+	if q.Has("application_name") {
+		// don't change it
+		return dbUrl
+	}
+	podName := os.Getenv("POD_NAME")
+	conName := os.Getenv("CONTAINER_NAME")
+	appName := ""
+	if podName != "" && conName != "" {
+		appName = podName + "/" + conName
+	} else if podName != "" {
+		appName = podName
+	} else if conName != "" {
+		appName = conName
+	}
+	if appName == "" {
+		return dbUrl
+	}
+	q.Set("application_name", appName)
+	parsed.RawQuery = q.Encode()
+	return parsed.String()
 }
 
 func SQLiteDSN(filename string, fileScheme, memory bool) string {
