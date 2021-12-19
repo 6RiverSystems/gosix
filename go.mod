@@ -9,7 +9,7 @@ require (
 	github.com/deepmap/oapi-codegen v1.9.0
 	github.com/getkin/kin-openapi v0.85.0
 	github.com/gin-contrib/expvar v0.0.1
-	github.com/gin-contrib/gzip v0.0.3
+	github.com/gin-contrib/gzip v0.0.5
 	github.com/gin-contrib/location v0.0.2
 	github.com/gin-contrib/logger v0.2.0
 	github.com/gin-gonic/gin v1.7.7
