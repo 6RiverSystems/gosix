@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -83,7 +84,7 @@ func (s *gatewayService) Start(ctx context.Context, ready chan<- struct{}) error
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		// retry if we get connection refused, as this proxy might start before
 		// the grpc server starts ... this doesn't really seem to work however
 		grpc.FailOnNonTempDialError(false),
