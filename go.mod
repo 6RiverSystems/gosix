@@ -23,7 +23,7 @@ require (
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.12.0
+	github.com/prometheus/client_golang v1.12.1
 	github.com/quasilyte/go-ruleguard/dsl v0.3.15
 	github.com/rs/cors/wrapper/gin v0.0.0-20211222042454-bf1dbac76afe
 	github.com/rs/zerolog v1.26.1
