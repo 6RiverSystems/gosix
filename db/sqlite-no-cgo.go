@@ -29,7 +29,7 @@ import (
 )
 
 // in non-CGO mode, use the modernc.org/sqlite driver
-const sqliteDriver = "sqlite"
+const SQLiteDriverName = "sqlite"
 
 func SQLiteDSN(filename string, fileScheme, memory bool) string {
 	if strings.HasPrefix(filename, "/") {

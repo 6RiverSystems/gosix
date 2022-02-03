@@ -29,7 +29,7 @@ import (
 )
 
 // in CGO mode, use the github.com/mattn/go-sqlite3 driver
-const sqliteDriver = "sqlite3"
+const SQLiteDriverName = "sqlite3"
 
 func SQLiteDSN(filename string, fileScheme, memory bool) string {
 	if strings.HasPrefix(filename, "/") {
