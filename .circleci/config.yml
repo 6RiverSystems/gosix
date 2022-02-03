@@ -12,7 +12,7 @@ jobs:
         type: string
     docker:
       - image: cimg/go:1.17
-      - image: << paraneters.pgimg >>
+      - image: << parameters.pgimg >>
         environment:
           POSTGRES_USER: circle
           POSTGRES_DB: circle_test
@@ -48,7 +48,7 @@ jobs:
             # for Go modules, we only need version numbers on `main`, as Go can
             # pull any other git commit by hash
             and:
-              - equal: [main, << pipeline.git.branch >>]
+              - equal: ["main", << pipeline.git.branch >>]
               - equal: ["1", << parameters.cgo >>]
               - equal: ["cimg/postgres:9.6", << parameters.pgimg >>]
           steps:
