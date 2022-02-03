@@ -5,6 +5,11 @@ orbs:
 
 jobs:
   all-in-one:
+    parameters:
+      pgimg:
+        type: string
+      cgo:
+        type: string
     docker:
       - image: cimg/go:1.17
       - image: << paraneters.pgimg >>
