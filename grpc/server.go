@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -64,6 +65,9 @@ func (s *grpcServer) Name() string {
 	}
 }
 
+// this is mostly just for tests, race wouldn't likely hit this in a real app
+var grpcPromInitOnce sync.Once
+
 func (s *grpcServer) Initialize(ctx context.Context, reg *registry.Registry, client ent.EntClient) error {
 	s.realPort = server.ResolvePort(s.defaultPort, s.offset)
 	s.logger = logging.GetLogger("server/grpc/" + strconv.Itoa(s.realPort))
@@ -83,7 +87,9 @@ func (s *grpcServer) Initialize(ctx context.Context, reg *registry.Registry, cli
 	if s.opts != nil {
 		opts = append(opts, s.opts...)
 	}
-	grpc_prometheus.EnableHandlingTimeHistogram()
+	grpcPromInitOnce.Do(func() {
+		grpc_prometheus.EnableHandlingTimeHistogram()
+	})
 	if s.listenConfig == nil {
 		s.listenConfig = &net.ListenConfig{}
 	}
