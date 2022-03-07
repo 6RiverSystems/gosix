@@ -82,6 +82,9 @@ func (s *gatewayService) Initialize(_ context.Context, services *registry.Regist
 func (s *gatewayService) Start(ctx context.Context, ready chan<- struct{}) error {
 	defer close(ready)
 
+	// TODO: add an example of how to use runtime.WithHealthzEndpoint(). for now
+	// this requires external info from the app, and so is something the app can
+	// do from the initHandlers hook
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
