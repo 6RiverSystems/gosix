@@ -38,6 +38,20 @@ jobs:
             - go-build-aio-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
             - go-build-aio-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-
 
+        # for Go modules, we only need version numbers on `main`, as Go can
+        # pull any other git commit by hash. we only need to do this for one matrix variant.
+      - when:
+          condition:
+            and:
+              - equal: ["main", << pipeline.git.branch >>]
+              - equal: ["1", << parameters.cgo >>]
+              - equal: ["cimg/postgres:9.6", << parameters.pgimg >>]
+          steps:
+            - sixrs-gke/run-release
+            - store_artifacts:
+                name: Capture chosen version
+                path: .version
+
       - run: ./mage -v get
       - run: ./mage -v installCITools
       - run:
