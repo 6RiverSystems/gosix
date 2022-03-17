@@ -31,8 +31,7 @@ import (
 )
 
 func TestProvider_Types(t *testing.T) {
-
-	var _gen = 0
+	_gen := 0
 	gen := func(Values) int {
 		_gen++
 		return _gen

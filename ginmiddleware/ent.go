@@ -28,8 +28,10 @@ import (
 	"go.6river.tech/gosix/logging"
 )
 
-var entClientKeyBase = "ent-client-"
-var entTxKeyBase = "ent-tx-"
+var (
+	entClientKeyBase = "ent-client-"
+	entTxKeyBase     = "ent-tx-"
+)
 
 func WithEntClient(client ent.EntClient, name string) gin.HandlerFunc {
 	key := entClientKeyBase + name

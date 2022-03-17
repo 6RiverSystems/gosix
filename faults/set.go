@@ -136,7 +136,7 @@ func (s *Set) prune() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for o, l := range s.faults {
-		var dest = 0
+		dest := 0
 		for src := range l {
 			if atomic.LoadInt64(&l[src].Count) > 0 {
 				if src != dest {

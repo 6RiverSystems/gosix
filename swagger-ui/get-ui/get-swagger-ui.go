@@ -81,7 +81,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = os.Mkdir("ui", 0777) // rely on umask
+	err = os.Mkdir("ui", 0o777) // rely on umask
 	if err != nil && !errors.Is(err, os.ErrExist) {
 		panic(err)
 	}
@@ -132,7 +132,7 @@ func main() {
 					],
 				})`,
 			)
-			if err = os.WriteFile(path.Join("ui", path.Base(h.Name)), []byte(fileContent), 0666); err != nil { // umask again
+			if err = os.WriteFile(path.Join("ui", path.Base(h.Name)), []byte(fileContent), 0o666); err != nil { // umask again
 				panic(err)
 			}
 		case "package/favicon-16x16.png",
@@ -147,7 +147,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			if err = os.WriteFile(path.Join("ui", path.Base(h.Name)), fileData, 0666); err != nil { // umask again
+			if err = os.WriteFile(path.Join("ui", path.Base(h.Name)), fileData, 0o666); err != nil { // umask again
 				panic(err)
 			}
 

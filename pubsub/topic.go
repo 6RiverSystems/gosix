@@ -29,9 +29,12 @@ import (
 
 // re-export for ease of use
 type TopicConfig = pubsub.TopicConfig
-type TopicConfigToUpdate = pubsub.TopicConfigToUpdate
-type PublishResult = pubsub.PublishResult
-type PublishSettings = pubsub.PublishSettings
+
+type (
+	TopicConfigToUpdate = pubsub.TopicConfigToUpdate
+	PublishResult       = pubsub.PublishResult
+	PublishSettings     = pubsub.PublishSettings
+)
 
 type TopicCommon interface {
 	fmt.Stringer
@@ -54,8 +57,10 @@ type Topic interface {
 	CreateSubscription(ctx context.Context, id string, cfg SubscriptionConfig) (Subscription, error)
 }
 
-var _ TopicCommon = &pubsub.Topic{} // Doesn't work because of interface return
-var _ Topic = &monitoredTopic{}
+var (
+	_ TopicCommon = &pubsub.Topic{} // Doesn't work because of interface return
+	_ Topic       = &monitoredTopic{}
+)
 
 type monitoredTopic struct {
 	c *monitoredClient

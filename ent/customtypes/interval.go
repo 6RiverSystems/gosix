@@ -34,10 +34,12 @@ import (
 
 type Interval time.Duration
 
-var _ driver.Valuer = Interval(0)
-var _ field.ValueScanner = (*Interval)(nil)
-var _ json.Marshaler = Interval(0)
-var _ json.Unmarshaler = (*Interval)(nil)
+var (
+	_ driver.Valuer      = Interval(0)
+	_ field.ValueScanner = (*Interval)(nil)
+	_ json.Marshaler     = Interval(0)
+	_ json.Unmarshaler   = (*Interval)(nil)
+)
 
 func (i Interval) String() string {
 	return time.Duration(i).String()
@@ -151,6 +153,7 @@ func ParsePostgreSQLInterval(s string) (result time.Duration, err error) {
 
 	return
 }
+
 func adjustDuration(d *time.Duration, value string, scale time.Duration) error {
 	if len(value) == 0 {
 		return nil
@@ -173,6 +176,8 @@ var pgIntervalRegexp = regexp.MustCompile(
 // FIXME: PG understands that years, months, and days are relative to some
 // specific time, we just assume 24 hour days, 30 day months, and 365 day years
 
-const day = 24 * time.Hour
-const month = 30 * day
-const year = 365 * day
+const (
+	day   = 24 * time.Hour
+	month = 30 * day
+	year  = 365 * day
+)

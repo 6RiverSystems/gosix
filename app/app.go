@@ -121,8 +121,10 @@ func (app *App) WithDefaults() *App {
 	return app
 }
 
-var entClientKey = registry.InterfaceAt("ent-client", (*ent.EntClient)(nil))
-var pubsubClientKey = registry.InterfaceAt("pubsub-client", (*pubsub.Client)(nil))
+var (
+	entClientKey    = registry.InterfaceAt("ent-client", (*ent.EntClient)(nil))
+	pubsubClientKey = registry.InterfaceAt("pubsub-client", (*pubsub.Client)(nil))
+)
 
 func (app *App) Main() (err error) {
 	logging.ConfigureDefaultLogging()

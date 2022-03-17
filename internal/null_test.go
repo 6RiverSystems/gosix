@@ -31,6 +31,7 @@ import (
 	_ "github.com/google/addlicense"
 	_ "golang.org/x/tools/imports"
 	_ "gotest.tools/gotestsum/cmd"
+	_ "mvdan.cc/gofumpt"
 
 	// needed for golangci-lint
 	_ "github.com/quasilyte/go-ruleguard/dsl"

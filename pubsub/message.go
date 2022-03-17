@@ -36,8 +36,10 @@ type Message interface {
 // for imports to have access to the real one they need for sending
 type RealMessage = pubsub.Message
 
-var _ MessageCommon = &pubsub.Message{}
-var _ Message = &monitoredMessage{}
+var (
+	_ MessageCommon = &pubsub.Message{}
+	_ Message       = &monitoredMessage{}
+)
 
 type monitoredMessage struct {
 	*pubsub.Message

@@ -31,14 +31,18 @@ import (
 	"go.6river.tech/gosix/pubsub"
 )
 
-type ErrorHandler func(context.Context, pubsub.Message, error) (ackMessage bool)
-type FanoutErrorHandler func(context.Context, pubsub.Message, error) pubsub.RetriableError
+type (
+	ErrorHandler       func(context.Context, pubsub.Message, error) (ackMessage bool)
+	FanoutErrorHandler func(context.Context, pubsub.Message, error) pubsub.RetriableError
+)
 
 // TODO: the ParsedMessageHandler types won't play nice with oapi-codegen, as it
 // can't deserialize from map[string]interface{}
 
-type ParsedMessageHandler func(context.Context, pubsub.Message, interface{})
-type ParsedFanoutMessageHandler func(context.Context, pubsub.Message, interface{}) pubsub.RetriableError
+type (
+	ParsedMessageHandler       func(context.Context, pubsub.Message, interface{})
+	ParsedFanoutMessageHandler func(context.Context, pubsub.Message, interface{}) pubsub.RetriableError
+)
 
 // WithValidation wraps a message handler with OAS validation. Messages are
 // assumed to be JSON. The inner messageHandler is required, but errorHandler

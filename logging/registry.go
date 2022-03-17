@@ -31,9 +31,11 @@ import (
 // logging registry is here instead of in the registry package to avoid circular
 // and unnecessary dependencies
 
-var configGeneration int32
-var configMutex sync.Mutex
-var componentLevel = map[string]zerolog.Level{}
+var (
+	configGeneration int32
+	configMutex      sync.Mutex
+	componentLevel   = map[string]zerolog.Level{}
+)
 
 // configLevel returns the current config generation, and the effective level
 // for a given component. Component levels should be separated with `/`
@@ -158,12 +160,15 @@ func logPairs(event *zerolog.Event, msg string, keysAndValues ...interface{}) {
 func (l LeveledLogger) Error(msg string, keysAndValues ...interface{}) {
 	logPairs(l.l.Error(), msg, keysAndValues...)
 }
+
 func (l LeveledLogger) Info(msg string, keysAndValues ...interface{}) {
 	logPairs(l.l.Info(), msg, keysAndValues...)
 }
+
 func (l LeveledLogger) Debug(msg string, keysAndValues ...interface{}) {
 	logPairs(l.l.Debug(), msg, keysAndValues...)
 }
+
 func (l LeveledLogger) Warn(msg string, keysAndValues ...interface{}) {
 	logPairs(l.l.Warn(), msg, keysAndValues...)
 }

@@ -75,6 +75,7 @@ func Benchmark_Check_filled_miss_pval_small_params_pre(b *testing.B) {
 		}
 	}
 }
+
 func Benchmark_Check_filled_miss_pname_small_params_pre(b *testing.B) {
 	s := NewSet(b.Name())
 	s.Add(Description{"op", Parameters{"a": "1"}, nil, 1, "grpc.NotFound"})

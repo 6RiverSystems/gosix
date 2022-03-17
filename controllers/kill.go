@@ -28,8 +28,7 @@ import (
 	"go.6river.tech/gosix/server"
 )
 
-type KillController struct {
-}
+type KillController struct{}
 
 func (k *KillController) Register(_ *registry.Registry, router gin.IRouter) error {
 	rg := router.Group("/server")

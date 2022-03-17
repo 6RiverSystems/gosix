@@ -47,8 +47,10 @@ type Client interface {
 	/* CreateSubscription(ctx context.Context, id string, cfg SubscriptionConfig) (Subscription, error) */
 }
 
-var _ ClientCommon = &pubsub.Client{} // doesn't work because of interface return types
-var _ Client = &monitoredClient{}
+var (
+	_ ClientCommon = &pubsub.Client{} // doesn't work because of interface return types
+	_ Client       = &monitoredClient{}
+)
 
 type monitoredClient struct {
 	*pubsub.Client

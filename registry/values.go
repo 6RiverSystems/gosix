@@ -108,9 +108,11 @@ type exactValue struct{ value interface{} }
 func (v exactValue) Value(Values) interface{} {
 	return v.value
 }
+
 func (v exactValue) ValueType() reflect.Type {
 	return reflect.ValueOf(v.value).Type()
 }
+
 func ConstantValue(v interface{}) ValueSource {
 	return exactValue{v}
 }

@@ -62,18 +62,23 @@ func (l *Logger) Current() zerolog.Logger {
 func (l *Logger) Trace() *zerolog.Event {
 	return l.update().Trace()
 }
+
 func (l *Logger) Debug() *zerolog.Event {
 	return l.update().Debug()
 }
+
 func (l *Logger) Info() *zerolog.Event {
 	return l.update().Info()
 }
+
 func (l *Logger) Warn() *zerolog.Event {
 	return l.update().Warn()
 }
+
 func (l *Logger) Error() *zerolog.Event {
 	return l.update().Error()
 }
+
 func (l *Logger) Fatal() *zerolog.Event {
 	return l.update().Fatal()
 }

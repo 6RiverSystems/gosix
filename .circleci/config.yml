@@ -11,7 +11,7 @@ jobs:
       cgo:
         type: string
     docker:
-      - image: cimg/go:1.17
+      - image: cimg/go:1.18
       - image: << parameters.pgimg >>
         environment:
           POSTGRES_USER: circle

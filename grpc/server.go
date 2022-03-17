@@ -173,6 +173,7 @@ func (cs *countingStream) SendMsg(m interface{}) error {
 	atomic.AddUint64(&cs.numSent, 1)
 	return nil
 }
+
 func (cs *countingStream) RecvMsg(m interface{}) error {
 	err := cs.ServerStream.RecvMsg(m)
 	if err != nil {

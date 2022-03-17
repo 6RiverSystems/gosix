@@ -143,6 +143,7 @@ func RegisterHttpService(services *registry.Registry, r *gin.Engine, defaultPort
 func HttpServer(c *gin.Context) *http.Server {
 	return c.Request.Context().Value(http.ServerContextKey).(*http.Server)
 }
+
 func Values(c *gin.Context) registry.Values {
 	return registry.ContextValues(c.Request.Context())
 }

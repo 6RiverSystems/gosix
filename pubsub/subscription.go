@@ -48,8 +48,10 @@ type Subscription interface {
 	EnsureDefaultConfig(context.Context, ...func(*SubscriptionConfigToUpdate)) (SubscriptionConfig, error)
 }
 
-var _ SubscriptionCommon = &pubsub.Subscription{} // doesn't work because Receive handler message type
-var _ Subscription = &monitoredSubscription{}
+var (
+	_ SubscriptionCommon = &pubsub.Subscription{} // doesn't work because Receive handler message type
+	_ Subscription       = &monitoredSubscription{}
+)
 
 /* // wrapper variant to deal with the Topic member variance
 type SubscriptionConfig struct {
@@ -58,9 +60,11 @@ type SubscriptionConfig struct {
 }
 */
 
-type SubscriptionConfig = pubsub.SubscriptionConfig
-type SubscriptionConfigToUpdate = pubsub.SubscriptionConfigToUpdate
-type RetryPolicy = pubsub.RetryPolicy
+type (
+	SubscriptionConfig         = pubsub.SubscriptionConfig
+	SubscriptionConfigToUpdate = pubsub.SubscriptionConfigToUpdate
+	RetryPolicy                = pubsub.RetryPolicy
+)
 
 type monitoredSubscription struct {
 	c *monitoredClient
