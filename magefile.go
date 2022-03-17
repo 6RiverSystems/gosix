@@ -181,7 +181,7 @@ func Format(ctx context.Context) error {
 
 func FormatDir(ctx context.Context, dir string) error {
 	fmt.Printf("Formatting(%s)...\n", dir)
-	if err := sh.Run("go", "run", "mvdan.cc/gofumpt@latest", "-l", "-w", dir); err != nil {
+	if err := sh.Run("go", "run", "mvdan.cc/gofumpt", "-l", "-w", dir); err != nil {
 		return err
 	}
 	goImportsArgs := []string{"run", "golang.org/x/tools/cmd/goimports", "-l", "-w"}
@@ -206,7 +206,7 @@ func FormatGenerated(ctx context.Context) error {
 			files = append(files, l)
 		}
 	}
-	if err := sh.Run("go", append([]string{"run", "mvdan.cc/gofumpt@latest", "-l", "-w", "."}, files...)...); err != nil {
+	if err := sh.Run("go", append([]string{"run", "mvdan.cc/gofumpt", "-l", "-w", "."}, files...)...); err != nil {
 		return err
 	}
 	goImportsArgs := []string{"run", "golang.org/x/tools/cmd/goimports", "-l", "-w"}
@@ -250,7 +250,7 @@ func (Lint) Vet(ctx context.Context) error {
 // Format checks that all Go source code follows formatting rules
 func (Lint) Format(ctx context.Context) error {
 	fmt.Println("Linting(gofumpt)...")
-	outStr, err := runAndCapture("go", "run", "mvdan.cc/gofumpt@latest", "-l", ".")
+	outStr, err := runAndCapture("go", "run", "mvdan.cc/gofumpt", "-l", ".")
 	if err != nil {
 		return err
 	}
