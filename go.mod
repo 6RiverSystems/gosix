@@ -25,7 +25,7 @@ require (
 	github.com/magefile/mage v1.13.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.1
-	github.com/quasilyte/go-ruleguard/dsl v0.3.17
+	github.com/quasilyte/go-ruleguard/dsl v0.3.19
 	github.com/rs/cors/wrapper/gin v0.0.0-20211222042454-bf1dbac76afe
 	github.com/rs/zerolog v1.26.1
 	github.com/stretchr/testify v1.7.1-0.20210427113832-6241f9ab9942
