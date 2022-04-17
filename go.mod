@@ -3,7 +3,7 @@ module go.6river.tech/gosix
 go 1.18
 
 require (
-	cloud.google.com/go/pubsub v1.19.0
+	cloud.google.com/go/pubsub v1.20.0
 	entgo.io/ent v0.10.1
 	github.com/Depado/ginprom v1.7.4
 	github.com/deepmap/oapi-codegen v1.9.1
@@ -43,8 +43,7 @@ require (
 	ariga.io/atlas v0.3.7-0.20220303204946-787354f533c3 // indirect
 	cloud.google.com/go v0.100.2 // indirect
 	cloud.google.com/go/compute v1.5.0 // indirect
-	cloud.google.com/go/iam v0.1.0 // indirect
-	cloud.google.com/go/kms v1.3.0 // indirect
+	cloud.google.com/go/iam v0.3.0 // indirect
 	github.com/Antonboom/errname v0.1.5 // indirect
 	github.com/Antonboom/nilnil v0.1.0 // indirect
 	github.com/BurntSushi/toml v0.4.1 // indirect
