@@ -71,10 +71,14 @@ type monitoredTopic struct {
 }
 
 func (t *monitoredTopic) Publish(ctx context.Context, msg *pubsub.Message) *pubsub.PublishResult {
-	// Why does the google api require us to push this button? it is only used to
-	// make publishing throw an error if we forgot to push it
 	if msg.OrderingKey != "" {
+		// Why does the google api require us to push this button? it is only used to
+		// make publishing throw an error if we forgot to push it
 		t.Topic.EnableMessageOrdering = true
+		// make sure publishing is enabled before enqueuing this
+		// TODO: this is a bit of a hammer, in more complex cases we want to give
+		// the caller more control over this
+		t.Topic.ResumePublish(msg.OrderingKey)
 	}
 
 	r := t.Topic.Publish(ctx, msg)
