@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/pubsub v1.20.0
 	entgo.io/ent v0.10.1
 	github.com/Depado/ginprom v1.7.4
-	github.com/deepmap/oapi-codegen v1.9.1
+	github.com/deepmap/oapi-codegen v1.10.1
 	github.com/getkin/kin-openapi v0.94.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.5
@@ -28,7 +28,7 @@ require (
 	github.com/quasilyte/go-ruleguard/dsl v0.3.19
 	github.com/rs/cors/wrapper/gin v0.0.0-20211222042454-bf1dbac76afe
 	github.com/rs/zerolog v1.26.1
-	github.com/stretchr/testify v1.7.1-0.20210427113832-6241f9ab9942
+	github.com/stretchr/testify v1.7.1
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.10
 	google.golang.org/api v0.74.0
@@ -81,7 +81,7 @@ require (
 	github.com/go-critic/go-critic v0.6.1 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
-	github.com/go-openapi/swag v0.19.15 // indirect
+	github.com/go-openapi/swag v0.21.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.10.1 // indirect
@@ -139,7 +139,7 @@ require (
 	github.com/kulti/thelper v0.4.0 // indirect
 	github.com/kunwardeep/paralleltest v1.0.3 // indirect
 	github.com/kyoh86/exportloopref v0.1.8 // indirect
-	github.com/labstack/echo/v4 v4.6.3 // indirect
+	github.com/labstack/echo/v4 v4.7.2 // indirect
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/ldez/gomoddirectives v0.2.2 // indirect
 	github.com/ldez/tagliatelle v0.2.0 // indirect
@@ -214,14 +214,14 @@ require (
 	github.com/yeya24/promlinter v0.1.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/crypto v0.0.0-20220307211146-efcb8507fb70 // indirect
+	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
-	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
+	golang.org/x/net v0.0.0-20220418201149-a630d4f3e7a2 // indirect
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a // indirect
-	golang.org/x/sys v0.0.0-20220328115105-d36c6a25d886 // indirect
+	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220324131243-acbaeb5b85eb // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
