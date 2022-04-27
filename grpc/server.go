@@ -33,6 +33,7 @@ import (
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
@@ -83,6 +84,11 @@ func (s *grpcServer) Initialize(ctx context.Context, reg *registry.Registry, cli
 			grpc_prometheus.StreamServerInterceptor,
 			StreamFaultInjector(reg.Faults()),
 		),
+		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
+			// be tolerant of aggressive client keepalives
+			MinTime:             5 * time.Second,
+			PermitWithoutStream: true,
+		}),
 	}
 	if s.opts != nil {
 		opts = append(opts, s.opts...)
