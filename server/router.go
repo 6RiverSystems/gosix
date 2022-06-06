@@ -71,6 +71,9 @@ func NewEngine() *gin.Engine {
 
 	r := gin.New()
 
+	// request contexts should be request bound
+	r.ContextWithFallback = true
+
 	// attach custom logging
 	requestLogger := logging.GetLogger("gin/request")
 	r.Use(logger.SetLogger(

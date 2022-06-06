@@ -12,7 +12,7 @@ require (
 	github.com/gin-contrib/gzip v0.0.5
 	github.com/gin-contrib/location v0.0.2
 	github.com/gin-contrib/logger v0.2.2
-	github.com/gin-gonic/gin v1.8.0
+	github.com/gin-gonic/gin v1.8.1
 	github.com/golangci/golangci-lint v1.43.1-0.20211202084104-b04967a907fd
 	github.com/google/addlicense v1.0.0
 	github.com/google/uuid v1.3.0
