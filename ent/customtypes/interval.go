@@ -87,7 +87,7 @@ func (i *Interval) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d, err := ParsePostgreSQLInterval(s)
-	if err != nil {
+	if err == nil {
 		*i = Interval(d)
 	}
 	return err
