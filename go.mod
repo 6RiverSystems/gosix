@@ -31,7 +31,7 @@ require (
 	github.com/stretchr/testify v1.8.0
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
 	golang.org/x/tools v0.1.11-0.20220316014157-77aa08bb151a
-	google.golang.org/api v0.87.0
+	google.golang.org/api v0.88.0
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.0
 	gotest.tools/gotestsum v1.8.1
