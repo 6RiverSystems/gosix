@@ -53,7 +53,8 @@ jobs:
                 path: .version
 
       - run: ./mage -v get
-      - run: ./mage -v installCITools
+      # gotestsum is included in the cimg/go image
+      # - run: ./mage -v installCITools
       - run:
           # this is a library others pull in, so the proper generated code _MUST_
           # be committed
