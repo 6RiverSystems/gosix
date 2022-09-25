@@ -11,7 +11,7 @@ require (
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-contrib/location v0.0.2
-	github.com/gin-contrib/logger v0.2.2
+	github.com/gin-contrib/logger v0.2.5
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golangci/golangci-lint v1.49.0
 	github.com/google/addlicense v1.0.0
