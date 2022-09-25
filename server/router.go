@@ -20,10 +20,8 @@
 package server
 
 import (
-	"io"
 	_ "net/http/pprof"
 	"os"
-	"time"
 
 	"github.com/Depado/ginprom"
 	"github.com/gin-contrib/gzip"
@@ -77,7 +75,7 @@ func NewEngine() *gin.Engine {
 	// attach custom logging
 	requestLogger := logging.GetLogger("gin/request")
 	r.Use(logger.SetLogger(
-		logger.WithLogger(func(c *gin.Context, w io.Writer, d time.Duration) zerolog.Logger {
+		logger.WithLogger(func(c *gin.Context, l zerolog.Logger) zerolog.Logger {
 			return requestLogger.Current()
 		}),
 		logger.WithUTC(true),
