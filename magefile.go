@@ -464,7 +464,7 @@ func TestGoCISplit(ctx context.Context) error {
 	if len(packageNames) == 0 || packageNames[0] == "" {
 		packageNames = []string{"./..."}
 	}
-	args := []string{"--format", "standard-quiet", "--junitfile", filepath.Join(resultsDir, "gotestsum-report.xml"), "--"}
+	args := []string{"--format", "standard-verbose", "--junitfile", filepath.Join(resultsDir, "gotestsum-report.xml"), "--"}
 	args = append(args, goBuildArgs...)
 	args = append(args, goTestArgs...)
 	args = append(args, "-coverprofile="+filepath.Join(resultsDir, "coverage.out"))
@@ -484,7 +484,7 @@ func TestSmoke(ctx context.Context, cmd, hostPort string) error {
 	// start the test run in the background
 	eg.Go(func() error {
 		args := []string{
-			"--format", "standard-quiet",
+			"--format", "standard-verbose",
 			"--junitfile", filepath.Join(resultsDir, "gotestsum-smoke-report-"+cmd+".xml"),
 			"--",
 		}
@@ -499,55 +499,78 @@ func TestSmoke(ctx context.Context, cmd, hostPort string) error {
 		cmd := exec.CommandContext(ctx, "gotestsum", args...)
 		cmd.Env = append([]string{}, os.Environ()...)
 		cmd.Env = append(cmd.Env, "NODE_ENV=acceptance")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 		return cmd.Run()
 	})
 	eg.Go(func() error {
-		// wait for the app to get running
-		if mg.Verbose() {
-			fmt.Printf("Waiting for app(%s) at %s...\n", cmd, hostPort)
-		}
-		for {
-			conn, err := net.DialTimeout("tcp", hostPort, time.Minute)
-			if err != nil {
-				time.Sleep(50 * time.Millisecond)
-			}
-			if conn != nil {
-				conn.Close()
-				break
-			}
-		}
-		// run a couple quick HTTP checks
-		// TODO: these should be input specs too
-		tryURL := func(m string, u *url.URL) error {
-			if mg.Verbose() {
-				fmt.Printf("Trying %s %s ...\n", m, u)
-			}
-			if req, err := http.NewRequestWithContext(ctx, m, u.String(), nil); err != nil {
-				return err
-			} else if resp, err := http.DefaultClient.Do(req); err != nil {
-				return err
-			} else {
-				if resp.Body != nil {
-					defer resp.Body.Close()
-				}
-				if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-					return fmt.Errorf("failed %s %s: %d %s", m, u, resp.StatusCode, resp.Status)
-				}
-			}
-			return nil
-		}
-		if err := tryURL(http.MethodGet, &url.URL{Scheme: "http", Host: hostPort, Path: "/"}); err != nil {
-			return err
-		}
-		if err := tryURL(http.MethodGet, &url.URL{Scheme: "http", Host: hostPort, Path: "/v1/counter/frob"}); err != nil {
-			return err
-		}
-		if err := tryURL(http.MethodPost, &url.URL{Scheme: "http", Host: hostPort, Path: "/server/shutdown"}); err != nil {
-			return err
-		}
-		return nil
+		return TestSmokeCore(ctx, cmd, hostPort)
 	})
 	return eg.Wait()
+}
+
+func TestSmokeCore(ctx context.Context, cmd, hostPort string) error {
+	// wait for the app to get running
+	if mg.Verbose() {
+		fmt.Printf("Waiting for app(%s) at %s...\n", cmd, hostPort)
+	}
+	errTicker := time.NewTicker(15 * time.Second)
+	defer errTicker.Stop()
+	for {
+		select {
+		// stop waiting on context cancellation, e.g. if the app we're trying to
+		// test exited with an error
+		case <-ctx.Done():
+			return ctx.Err()
+		default: // continue
+		}
+		conn, err := net.DialTimeout("tcp", hostPort, 15*time.Second)
+		if err != nil {
+			select {
+			case <-errTicker.C:
+				fmt.Fprintf(os.Stderr, "App still not ready: %v\n", err)
+			default:
+			}
+			time.Sleep(50 * time.Millisecond)
+		}
+		if conn != nil {
+			if err := conn.Close(); err != nil {
+				return err
+			}
+			fmt.Println("App is up")
+			break
+		}
+	}
+	// run a couple quick HTTP checks
+	// TODO: these should be input specs too
+	tryURL := func(m string, u *url.URL) error {
+		if mg.Verbose() {
+			fmt.Printf("Trying %s %s ...\n", m, u)
+		}
+		if req, err := http.NewRequestWithContext(ctx, m, u.String(), nil); err != nil {
+			return err
+		} else if resp, err := http.DefaultClient.Do(req); err != nil {
+			return err
+		} else {
+			if resp.Body != nil {
+				defer resp.Body.Close()
+			}
+			if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+				return fmt.Errorf("failed %s %s: %d %s", m, u, resp.StatusCode, resp.Status)
+			}
+		}
+		return nil
+	}
+	if err := tryURL(http.MethodGet, &url.URL{Scheme: "http", Host: hostPort, Path: "/"}); err != nil {
+		return err
+	}
+	if err := tryURL(http.MethodGet, &url.URL{Scheme: "http", Host: hostPort, Path: "/v1/counter/frob"}); err != nil {
+		return err
+	}
+	if err := tryURL(http.MethodPost, &url.URL{Scheme: "http", Host: hostPort, Path: "/server/shutdown"}); err != nil {
+		return err
+	}
+	return nil
 }
 
 func CompileAndTest(ctx context.Context) error {
