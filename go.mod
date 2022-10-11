@@ -7,7 +7,7 @@ require (
 	entgo.io/ent v0.11.3
 	github.com/Depado/ginprom v1.7.4
 	github.com/deepmap/oapi-codegen v1.11.0
-	github.com/getkin/kin-openapi v0.103.0
+	github.com/getkin/kin-openapi v0.104.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-contrib/location v0.0.2
@@ -169,6 +169,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/moricho/tparallel v0.2.1 // indirect
 	github.com/nakabonne/nestif v0.3.1 // indirect
 	github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354 // indirect
