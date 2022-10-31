@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	cloud.google.com/go/pubsub v1.26.0
-	entgo.io/ent v0.11.3
+	entgo.io/ent v0.11.4
 	github.com/Depado/ginprom v1.7.4
 	github.com/deepmap/oapi-codegen v1.11.0
 	github.com/getkin/kin-openapi v0.106.0
@@ -41,7 +41,7 @@ require (
 
 require (
 	4d63.com/gochecknoglobals v0.1.0 // indirect
-	ariga.io/atlas v0.7.2-0.20220927111110-867ee0cca56a // indirect
+	ariga.io/atlas v0.7.3-0.20221011160332-3ca609863edd // indirect
 	cloud.google.com/go v0.104.0 // indirect
 	cloud.google.com/go/compute v1.10.0 // indirect
 	cloud.google.com/go/iam v0.5.0 // indirect
@@ -211,7 +211,7 @@ require (
 	github.com/sourcegraph/go-diff v0.6.1 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	github.com/spf13/cobra v1.6.0 // indirect
+	github.com/spf13/cobra v1.6.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.13.0 // indirect
