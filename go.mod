@@ -24,7 +24,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/magefile/mage v1.14.0
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.13.0
+	github.com/prometheus/client_golang v1.13.1
 	github.com/quasilyte/go-ruleguard/dsl v0.3.21
 	github.com/rs/cors/wrapper/gin v0.0.0-20220223021805-a4a5ce87d5a2
 	github.com/rs/zerolog v1.28.0
