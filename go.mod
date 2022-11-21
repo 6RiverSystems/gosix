@@ -14,7 +14,7 @@ require (
 	github.com/gin-contrib/logger v0.2.5
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golangci/golangci-lint v1.50.1
-	github.com/google/addlicense v1.0.0
+	github.com/google/addlicense v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
