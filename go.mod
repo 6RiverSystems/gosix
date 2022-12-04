@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/pubsub v1.26.0
 	entgo.io/ent v0.11.4
 	github.com/Depado/ginprom v1.7.4
-	github.com/deepmap/oapi-codegen v1.12.3
+	github.com/deepmap/oapi-codegen v1.12.4
 	github.com/getkin/kin-openapi v0.109.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.6
