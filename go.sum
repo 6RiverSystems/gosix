@@ -65,8 +65,8 @@ github.com/BurntSushi/toml v1.2.1 h1:9F2/+DoOYIOksmaJFPw1tGFy1eDnIJXg+UHjuD8lTak
 github.com/BurntSushi/toml v1.2.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
-github.com/Depado/ginprom v1.7.4 h1:4cV9RYKIkT28tZhBDam0p8me2RLypxS0in5Jw4zbcgg=
-github.com/Depado/ginprom v1.7.4/go.mod h1:Nq+O+mTGpOGotBcNbBqJJYnst5F/U0yP9T+wAInwYeg=
+github.com/Depado/ginprom v1.7.5 h1:v4ukwWcZ8LxPYlMx0K4alvCZPxOVVDnZYvYAhk6wt0E=
+github.com/Depado/ginprom v1.7.5/go.mod h1:FlRaDicW3G+I07Urs3KxyjHGRF2YYkqPeXtrfjS31bA=
 github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 h1:sHglBQTwgx+rWPdisA5ynNEsoARbiCBOyGcJM4/OzsM=
 github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24/go.mod h1:4UJr5HIiMZrwgkSPdsjy2uOQExX/WEILpIrO9UPGuXs=
 github.com/GaijinEntertainment/go-exhaustruct/v2 v2.3.0 h1:+r1rSv4gvYn0wmRjC8X7IAzX8QezqtFV9m0MUHFJgts=
