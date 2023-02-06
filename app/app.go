@@ -289,7 +289,6 @@ func (app *App) setupGin(ctx context.Context, client ent.EntClient) (*gin.Engine
 		if configHandler == nil {
 			configHandler = swaggerui.DefaultConfigHandler()
 		}
-		type msi = map[string]interface{}
 		engine.GET(swaggerui.ConfigLoadingPath, gin.WrapF(configHandler))
 		// NOTE: this will serve yaml as text/plain. YAML doesn't have a standardized
 		// mime type, so that's OK for now
