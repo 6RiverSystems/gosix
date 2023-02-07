@@ -22,6 +22,7 @@ package registry
 import (
 	"context"
 	"fmt"
+	"os"
 	"reflect"
 	"sync"
 )
@@ -179,6 +180,12 @@ func Provider[T any](f func(Values) T) *provider[T] {
 		f: f,
 		t: fvt.Out(0),
 	}
+}
+
+func EnvProvider(name string) *provider[string] {
+	return Provider(func(Values) string {
+		return os.Getenv(name)
+	})
 }
 
 type alias struct{ Key }
