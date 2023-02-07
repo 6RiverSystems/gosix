@@ -60,7 +60,7 @@ func New(appName string, parent Values) *Registry {
 	return ret
 }
 
-var RegistryKey = PointerAt("registry", (*Registry)(nil))
+var RegistryKey = PointerAt[Registry]("registry")
 
 func GetRegistry(vs Values) (*Registry, bool) {
 	if s, ok := vs.Value(RegistryKey); ok {

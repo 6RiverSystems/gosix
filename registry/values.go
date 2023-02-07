@@ -27,8 +27,6 @@ import (
 	"sync"
 )
 
-// This file _begs_ for generics
-
 type Key interface {
 	Address() string
 	ValueType() reflect.Type
@@ -37,97 +35,6 @@ type Key interface {
 type TypedKey[T any] interface {
 	Key
 	Value(Values) (value T, ok bool)
-}
-
-type stringKey struct {
-	string
-}
-
-var _ TypedKey[string] = (*stringKey)(nil)
-
-func (s *stringKey) Address() string { return s.string }
-
-var stringType = reflect.TypeOf("")
-
-func (*stringKey) ValueType() reflect.Type { return stringType }
-
-func (s *stringKey) Value(vv Values) (string, bool) {
-	v, ok := vv.Value(s)
-	if !ok {
-		return "", false
-	}
-	vs, ok := v.(string)
-	return vs, ok
-}
-
-func StringAt(address string) TypedKey[string] {
-	return &stringKey{address}
-}
-
-type int64Key struct{ string }
-
-var _ TypedKey[int64] = (*int64Key)(nil)
-
-func (s *int64Key) Address() string { return s.string }
-
-var int64Type = reflect.TypeOf(int64(0))
-
-func (*int64Key) ValueType() reflect.Type { return int64Type }
-
-func (s *int64Key) Value(vv Values) (int64, bool) {
-	v, ok := vv.Value(s)
-	if !ok {
-		return 0, false
-	}
-	vi, ok := v.(int64)
-	return vi, ok
-}
-
-func Int64At(address string) TypedKey[int64] {
-	return &int64Key{address}
-}
-
-type pointerKey struct {
-	address   string
-	valueType reflect.Type
-}
-
-// TODO: implement TypedKey[T]
-
-func (p *pointerKey) Address() string         { return p.address }
-func (p *pointerKey) ValueType() reflect.Type { return p.valueType }
-
-func PointerAt(address string, nilp interface{}) Key {
-	nilv := reflect.ValueOf(nilp)
-	t := nilv.Type()
-	if t.Kind() != reflect.Ptr {
-		panic(fmt.Errorf("PointerAt called with non-pointer type example"))
-	}
-	// could check nilv.IsNil() || nilv.IsZero, but doesn't matter
-	return &pointerKey{address, t}
-}
-
-type interfaceKey struct {
-	address   string
-	valueType reflect.Type
-}
-
-// TODO: implement TypedKey[T]
-
-func (p *interfaceKey) Address() string         { return p.address }
-func (p *interfaceKey) ValueType() reflect.Type { return p.valueType }
-
-// InterfaceAt creates a binding key for an interface value. Pass (*T)(nil) for
-// the nilp arg to get a binding for interface type T
-func InterfaceAt(address string, nilp interface{}) Key {
-	nilv := reflect.ValueOf(nilp)
-	t := nilv.Type()
-	if t.Kind() != reflect.Ptr {
-		panic(fmt.Errorf("InterfaceAt called with non-pointer type example"))
-	}
-	t = nilv.Type().Elem()
-	// could check nilv.IsNil() || nilv.IsZero, but doesn't matter
-	return &interfaceKey{address, t}
 }
 
 type ValueSource interface {

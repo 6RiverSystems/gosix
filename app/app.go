@@ -122,8 +122,8 @@ func (app *App) WithDefaults() *App {
 }
 
 var (
-	entClientKey    = registry.InterfaceAt("ent-client", (*ent.EntClient)(nil))
-	pubsubClientKey = registry.InterfaceAt("pubsub-client", (*pubsub.Client)(nil))
+	entClientKey    = registry.InterfaceAt[ent.EntClient]("ent-client")
+	pubsubClientKey = registry.InterfaceAt[pubsub.Client]("pubsub-client")
 )
 
 func (app *App) Main() (err error) {

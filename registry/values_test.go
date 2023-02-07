@@ -49,6 +49,7 @@ func TestProvider_Types(t *testing.T) {
 }
 
 func TestKey_Duplicates(t *testing.T) {
+	type ph struct{ placeholder bool }
 	tests := []struct {
 		factory   func(string) Key
 		generator func() []interface{}
@@ -62,11 +63,11 @@ func TestKey_Duplicates(t *testing.T) {
 			func() []interface{} { return []interface{}{int64(0), int64(1)} },
 		},
 		{
-			func(s string) Key { return PointerAt(s, (*struct{ placeholder bool })(nil)) },
+			func(s string) Key { return PointerAt[ph](s) },
 			func() []interface{} {
 				return []interface{}{
-					&struct{ placeholder bool }{false},
-					&struct{ placeholder bool }{true},
+					&ph{false},
+					&ph{true},
 				}
 			},
 		},
