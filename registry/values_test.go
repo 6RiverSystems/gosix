@@ -54,11 +54,11 @@ func TestKey_Duplicates(t *testing.T) {
 		generator func() []interface{}
 	}{
 		{
-			StringAt,
+			func(k string) Key { return StringAt(k) },
 			func() []interface{} { return []interface{}{"1", "2"} },
 		},
 		{
-			Int64At,
+			func(k string) Key { return Int64At(k) },
 			func() []interface{} { return []interface{}{int64(0), int64(1)} },
 		},
 		{

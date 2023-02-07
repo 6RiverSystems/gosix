@@ -33,9 +33,16 @@ type Key interface {
 	ValueType() reflect.Type
 }
 
+type TypedKey[T any] interface {
+	Key
+	Value(Values) (value T, ok bool)
+}
+
 type stringKey struct {
 	string
 }
+
+var _ TypedKey[string] = (*stringKey)(nil)
 
 func (s *stringKey) Address() string { return s.string }
 
@@ -43,11 +50,22 @@ var stringType = reflect.TypeOf("")
 
 func (*stringKey) ValueType() reflect.Type { return stringType }
 
-func StringAt(address string) Key {
+func (s *stringKey) Value(vv Values) (string, bool) {
+	v, ok := vv.Value(s)
+	if !ok {
+		return "", false
+	}
+	vs, ok := v.(string)
+	return vs, ok
+}
+
+func StringAt(address string) TypedKey[string] {
 	return &stringKey{address}
 }
 
 type int64Key struct{ string }
+
+var _ TypedKey[int64] = (*int64Key)(nil)
 
 func (s *int64Key) Address() string { return s.string }
 
@@ -55,7 +73,16 @@ var int64Type = reflect.TypeOf(int64(0))
 
 func (*int64Key) ValueType() reflect.Type { return int64Type }
 
-func Int64At(address string) Key {
+func (s *int64Key) Value(vv Values) (int64, bool) {
+	v, ok := vv.Value(s)
+	if !ok {
+		return 0, false
+	}
+	vi, ok := v.(int64)
+	return vi, ok
+}
+
+func Int64At(address string) TypedKey[int64] {
 	return &int64Key{address}
 }
 
@@ -63,6 +90,8 @@ type pointerKey struct {
 	address   string
 	valueType reflect.Type
 }
+
+// TODO: implement TypedKey[T]
 
 func (p *pointerKey) Address() string         { return p.address }
 func (p *pointerKey) ValueType() reflect.Type { return p.valueType }
@@ -81,6 +110,8 @@ type interfaceKey struct {
 	address   string
 	valueType reflect.Type
 }
+
+// TODO: implement TypedKey[T]
 
 func (p *interfaceKey) Address() string         { return p.address }
 func (p *interfaceKey) ValueType() reflect.Type { return p.valueType }
@@ -103,6 +134,8 @@ type ValueSource interface {
 	ValueType() reflect.Type
 }
 
+// TODO: TypedValueSource
+
 type exactValue struct{ value interface{} }
 
 func (v exactValue) Value(Values) interface{} {
@@ -117,22 +150,20 @@ func ConstantValue(v interface{}) ValueSource {
 	return exactValue{v}
 }
 
-type provider struct {
-	f func(Values) interface{}
+type provider[T any] struct {
+	f func(Values) T
 	t reflect.Type
 }
 
-var providerFType = reflect.TypeOf((func(Values) interface{})(nil))
-
-func (p *provider) Value(v Values) interface{} {
+func (p *provider[T]) Value(v Values) interface{} {
 	return p.f(v)
 }
 
-func (p *provider) ValueType() reflect.Type {
+func (p *provider[T]) ValueType() reflect.Type {
 	return p.t
 }
 
-func Provider(f interface{}) ValueSource {
+func Provider[T any](f func(Values) T) *provider[T] {
 	fv := reflect.ValueOf(f)
 	fvt := fv.Type()
 	if fvt.Kind() != reflect.Func {
@@ -144,8 +175,8 @@ func Provider(f interface{}) ValueSource {
 	if fvt.NumOut() != 1 {
 		panic(fmt.Errorf("Provider called with function with wrong number of outputs"))
 	}
-	return &provider{
-		f: reflect.MakeFunc(providerFType, fv.Call).Interface().(func(Values) interface{}),
+	return &provider[T]{
+		f: f,
 		t: fvt.Out(0),
 	}
 }

@@ -36,6 +36,7 @@ type Registry struct {
 	allServices []Service
 	allReadies  []chan struct{}
 	faults      *faults.Set
+	MutableValues
 
 	ctlMu          sync.Mutex
 	allControllers []Controller
@@ -50,9 +51,10 @@ type Registry struct {
 	_loggerOnce sync.Once
 }
 
-func New(appName string) *Registry {
+func New(appName string, parent Values) *Registry {
 	ret := &Registry{
-		faults: faults.NewSet(appName),
+		faults:        faults.NewSet(appName),
+		MutableValues: ChildValues(parent, "registry"),
 	}
 	ret.faults.MustRegister(prometheus.DefaultRegisterer)
 	return ret
