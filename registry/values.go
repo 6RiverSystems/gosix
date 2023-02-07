@@ -38,15 +38,15 @@ type TypedKey[T any] interface {
 }
 
 type ValueSource interface {
-	Value(Values) interface{}
+	Value(Values) any
 	ValueType() reflect.Type
 }
 
 // TODO: TypedValueSource
 
-type exactValue struct{ value interface{} }
+type exactValue struct{ value any }
 
-func (v exactValue) Value(Values) interface{} {
+func (v exactValue) Value(Values) any {
 	return v.value
 }
 
@@ -54,7 +54,7 @@ func (v exactValue) ValueType() reflect.Type {
 	return reflect.ValueOf(v.value).Type()
 }
 
-func ConstantValue(v interface{}) ValueSource {
+func ConstantValue(v any) ValueSource {
 	return exactValue{v}
 }
 
@@ -63,7 +63,7 @@ type provider[T any] struct {
 	t reflect.Type
 }
 
-func (p *provider[T]) Value(v Values) interface{} {
+func (p *provider[T]) Value(v Values) any {
 	return p.f(v)
 }
 
@@ -99,7 +99,7 @@ type alias struct{ Key }
 
 var _ ValueSource = alias{}
 
-func (a alias) Value(vs Values) interface{} {
+func (a alias) Value(vs Values) any {
 	if v, ok := vs.Value(a.Key); ok {
 		return v
 	}
@@ -110,7 +110,29 @@ func Alias(k Key) ValueSource { return alias{k} }
 type Values interface {
 	Path() string
 	ValueSource(Key) (ValueSource, bool)
-	Value(Key) (interface{}, bool)
+	Value(Key) (any, bool)
+}
+
+type adapter[T, U any] struct {
+	ValueSource
+	f func(T) U
+}
+
+func (a adapter[T, U]) Value(vs Values) any {
+	anyT := a.ValueSource.Value(vs)
+	if t, ok := anyT.(T); ok {
+		return a.f(t)
+	} else {
+		panic(fmt.Errorf("Unable to adapt: value is %T not %T", anyT, t))
+	}
+}
+
+func (adapter[T, U]) ValueType() reflect.Type {
+	return reflect.TypeOf((*U)(nil)).Elem()
+}
+
+func Adapter[T, U any](vs ValueSource, f func(T) U) ValueSource {
+	return adapter[T, U]{vs, f}
 }
 
 var valuesType = reflect.TypeOf((*Values)(nil)).Elem()
@@ -118,6 +140,8 @@ var valuesType = reflect.TypeOf((*Values)(nil)).Elem()
 type MutableValues interface {
 	Values
 	Bind(Key, ValueSource) bool
+	// TODO: want this in a helper method so it doesn't need to be re-implemented
+	MustBind(Key, ValueSource)
 }
 
 type rootContainer map[Key]ValueSource
@@ -128,7 +152,7 @@ func (rootContainer) Path() string {
 	return "/"
 }
 
-func (c rootContainer) Value(k Key) (interface{}, bool) {
+func (c rootContainer) Value(k Key) (any, bool) {
 	vs, ok := c[k]
 	if !ok {
 		return nil, false
@@ -148,6 +172,12 @@ func (c rootContainer) Bind(k Key, s ValueSource) bool {
 	}
 	c[k] = s
 	return true
+}
+
+func (c rootContainer) MustBind(k Key, s ValueSource) {
+	if ok := c.Bind(k, s); !ok {
+		panic(fmt.Errorf("unable to bind %v to %v, type mismatch?", k, s))
+	}
 }
 
 func NewValues() MutableValues {
@@ -178,7 +208,7 @@ func (c *childContainer) ValueSource(k Key) (ValueSource, bool) {
 	return nil, false
 }
 
-func (c *childContainer) Value(k Key) (interface{}, bool) {
+func (c *childContainer) Value(k Key) (any, bool) {
 	if vs, ok := c.ValueSource(k); !ok {
 		return nil, false
 	} else {
@@ -191,6 +221,10 @@ func (c *childContainer) Bind(k Key, s ValueSource) bool {
 	return c.values.Bind(k, s)
 }
 
+func (c *childContainer) MustBind(k Key, s ValueSource) {
+	c.values.MustBind(k, s)
+}
+
 func ChildValues(parent Values, name string) MutableValues {
 	return &childContainer{parent, name, make(rootContainer)}
 }
@@ -198,7 +232,7 @@ func ChildValues(parent Values, name string) MutableValues {
 type cachedContainer struct {
 	Values
 	mu    sync.Mutex
-	cache map[Key]interface{}
+	cache map[Key]any
 }
 
 func (c *cachedContainer) Path() string {
@@ -207,7 +241,7 @@ func (c *cachedContainer) Path() string {
 	return p[0:len(p)-1] + "(c)/"
 }
 
-func (c *cachedContainer) Value(k Key) (interface{}, bool) {
+func (c *cachedContainer) Value(k Key) (any, bool) {
 	if v, ok := c.get(k); ok {
 		return v, true
 	} else if vs, ok := c.Values.ValueSource(k); ok {
@@ -218,14 +252,14 @@ func (c *cachedContainer) Value(k Key) (interface{}, bool) {
 	return nil, false
 }
 
-func (c *cachedContainer) get(k Key) (interface{}, bool) {
+func (c *cachedContainer) get(k Key) (any, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	v, ok := c.cache[k]
 	return v, ok
 }
 
-func (c *cachedContainer) put(k Key, v interface{}) {
+func (c *cachedContainer) put(k Key, v any) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.cache[k] = v
@@ -235,7 +269,7 @@ func CachedValues(vs Values) Values {
 	if cc, ok := vs.(*cachedContainer); ok {
 		return cc
 	}
-	return &cachedContainer{Values: vs, cache: map[Key]interface{}{}}
+	return &cachedContainer{Values: vs, cache: map[Key]any{}}
 }
 
 type contextKey struct{ name string }

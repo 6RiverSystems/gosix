@@ -116,7 +116,7 @@ func (app *App) WithDefaults() *App {
 	}
 	if app.Registry == nil {
 		app.Registry = registry.New(app.Name, app.MutableValues)
-		app.Bind(registry.RegistryKey, registry.ConstantValue(app.Registry))
+		app.MustBind(registry.RegistryKey, registry.ConstantValue(app.Registry))
 	}
 	return app
 }
@@ -166,7 +166,7 @@ func (app *App) Main() (err error) {
 	if client, err = app.setupDB(ctx, logger, drv); err != nil {
 		return err
 	}
-	app.Bind(entClientKey, registry.ConstantValue(client))
+	app.MustBind(entClientKey, registry.ConstantValue(client))
 
 	if app.WithPubsubClient {
 		// app name needs to be sanitized for prometheus
@@ -175,7 +175,7 @@ func (app *App) Main() (err error) {
 		if psc, err := pubsub.DefaultClient(promNs); err != nil {
 			return err
 		} else {
-			app.Bind(pubsubClientKey, registry.ConstantValue(psc))
+			app.MustBind(pubsubClientKey, registry.ConstantValue(psc))
 		}
 	}
 
