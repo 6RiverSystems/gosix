@@ -108,9 +108,11 @@ func WithOASValidation(
 		}
 
 		// write the buffered body now that validation passed
-		_, err = realWriter.Write(bodyCapture.Bytes())
-		if err != nil {
-			panic(err)
+		if body := bodyCapture.Bytes(); c.Writer.Status() != http.StatusNoContent || len(body) != 0 {
+			_, err = realWriter.Write(body)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 }
