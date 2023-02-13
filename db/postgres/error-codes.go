@@ -23,7 +23,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // reference: https://www.postgresql.org/docs/9.6/errcodes-appendix.html
