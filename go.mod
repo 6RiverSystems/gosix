@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go/pubsub v1.28.0
-	entgo.io/ent v0.11.8
+	entgo.io/ent v0.11.9
 	github.com/Depado/ginprom v1.7.6
 	github.com/deepmap/oapi-codegen v1.12.4
 	github.com/getkin/kin-openapi v0.112.0
@@ -29,7 +29,7 @@ require (
 	github.com/rs/zerolog v1.29.0
 	github.com/stretchr/testify v1.8.2
 	golang.org/x/sync v0.1.0
-	golang.org/x/tools v0.6.0
+	golang.org/x/tools v0.6.1-0.20230222164832-25d2519c8696
 	golang.org/x/vuln v0.0.0-20220908210932-64dbbd7bba4f
 	google.golang.org/api v0.110.0
 	google.golang.org/grpc v1.53.0
@@ -41,7 +41,7 @@ require (
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
-	ariga.io/atlas v0.9.1-0.20230119145809-92243f7c55cb // indirect
+	ariga.io/atlas v0.9.1 // indirect
 	cloud.google.com/go v0.107.0 // indirect
 	cloud.google.com/go/compute v1.18.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
