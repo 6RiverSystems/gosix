@@ -31,7 +31,7 @@ require (
 	golang.org/x/sync v0.1.0
 	golang.org/x/tools v0.6.1-0.20230222164832-25d2519c8696
 	golang.org/x/vuln v0.0.0-20220908210932-64dbbd7bba4f
-	google.golang.org/api v0.110.0
+	google.golang.org/api v0.111.0
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.28.1
 	gotest.tools/gotestsum v1.9.0
