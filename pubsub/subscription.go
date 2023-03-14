@@ -64,6 +64,7 @@ type (
 	SubscriptionConfig         = pubsub.SubscriptionConfig
 	SubscriptionConfigToUpdate = pubsub.SubscriptionConfigToUpdate
 	RetryPolicy                = pubsub.RetryPolicy
+	PushConfig                 = pubsub.PushConfig
 )
 
 type monitoredSubscription struct {
