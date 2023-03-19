@@ -3,7 +3,7 @@ module go.6river.tech/gosix
 go 1.20
 
 require (
-	cloud.google.com/go/pubsub v1.28.0
+	cloud.google.com/go/pubsub v1.29.0
 	entgo.io/ent v0.11.9
 	github.com/Depado/ginprom v1.7.6
 	github.com/deepmap/oapi-codegen v1.12.4
