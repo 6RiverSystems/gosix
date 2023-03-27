@@ -3,7 +3,7 @@ module go.6river.tech/gosix
 go 1.20
 
 require (
-	cloud.google.com/go/pubsub v1.29.0
+	cloud.google.com/go/pubsub v1.30.0
 	entgo.io/ent v0.11.9
 	github.com/Depado/ginprom v1.7.6
 	github.com/deepmap/oapi-codegen v1.12.5-0.20230314231417-0cfaaa77a7d2
@@ -251,7 +251,7 @@ require (
 	golang.org/x/term v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
+	google.golang.org/genproto v0.0.0-20230320184635-7606e756e683 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
