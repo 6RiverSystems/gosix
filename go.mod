@@ -26,7 +26,7 @@ require (
 	github.com/prometheus/client_golang v1.15.0
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/rs/cors/wrapper/gin v0.0.0-20220223021805-a4a5ce87d5a2
-	github.com/rs/zerolog v1.29.0
+	github.com/rs/zerolog v1.29.1
 	github.com/stretchr/testify v1.8.2
 	golang.org/x/sync v0.1.0
 	golang.org/x/tools v0.8.0
