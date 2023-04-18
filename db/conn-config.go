@@ -176,7 +176,7 @@ func Open(driverName, dialectName, dsn string) (db *sql.DB, err error) {
 	}
 
 	maxOpenConns := 10
-	maxIdleTime := time.Second
+	maxIdleTime := 10 * time.Second
 	if driverName == "sqlite3" {
 		if strings.Contains(dsn, "mode=memory") {
 			// memory mode can only have one connection at a time, unless shared cache
