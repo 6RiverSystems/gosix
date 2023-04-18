@@ -188,8 +188,8 @@ func Open(driverName, dialectName, dsn string) (db *sql.DB, err error) {
 			maxIdleTime = 0
 		}
 	}
-	// db.SetMaxIdleConns has a sane default
 	db.SetMaxOpenConns(maxOpenConns)
+	db.SetMaxIdleConns(maxOpenConns)
 	db.SetConnMaxIdleTime(maxIdleTime)
 	// don't think we need to use db.SetConnMaxLifetime()
 
