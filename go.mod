@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go/pubsub v1.30.0
-	entgo.io/ent v0.12.0
+	entgo.io/ent v0.12.2
 	github.com/Depado/ginprom v1.7.9
 	github.com/deepmap/oapi-codegen v1.12.5-0.20230314231417-0cfaaa77a7d2
 	github.com/getkin/kin-openapi v0.115.0
