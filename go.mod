@@ -30,7 +30,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/sync v0.3.0
 	golang.org/x/tools v0.10.0
-	golang.org/x/vuln v0.0.0-20230313161840-8a73a7e4f203
+	golang.org/x/vuln v0.2.0
 	google.golang.org/api v0.129.0
 	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.31.0
@@ -267,5 +267,5 @@ require (
 	honnef.co/go/tools v0.4.3 // indirect
 	mvdan.cc/interfacer v0.0.0-20180901003855-c20040233aed // indirect
 	mvdan.cc/lint v0.0.0-20170908181259-adc824a0674b // indirect
-	mvdan.cc/unparam v0.0.0-20221223090309-7455f1af531d // indirect
+	mvdan.cc/unparam v0.0.0-20230312165513-e84e2d14e3b8 // indirect
 )
