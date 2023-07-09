@@ -34,7 +34,7 @@ require (
 	google.golang.org/api v0.129.0
 	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.31.0
-	gotest.tools/gotestsum v1.10.0
+	gotest.tools/gotestsum v1.10.1
 	mvdan.cc/gofumpt v0.5.0
 )
 
