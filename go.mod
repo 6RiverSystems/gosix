@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/pubsub v1.33.0
 	entgo.io/ent v0.12.3
 	github.com/Depado/ginprom v1.7.11
-	github.com/deepmap/oapi-codegen v1.13.0
+	github.com/deepmap/oapi-codegen v1.13.1
 	github.com/getkin/kin-openapi v0.118.0
 	github.com/gin-contrib/expvar v0.0.1
 	github.com/gin-contrib/gzip v0.0.6
@@ -25,11 +25,11 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.16.0
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
-	github.com/rs/cors/wrapper/gin v0.0.0-20220223021805-a4a5ce87d5a2
+	github.com/rs/cors/wrapper/gin v0.0.0-20230526135330-e90f16747950
 	github.com/rs/zerolog v1.30.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/sync v0.3.0
-	golang.org/x/tools v0.11.0
+	golang.org/x/tools v0.11.1
 	golang.org/x/vuln v1.0.0
 	google.golang.org/api v0.134.0
 	google.golang.org/grpc v1.57.0
