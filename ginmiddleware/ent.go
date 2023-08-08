@@ -33,27 +33,35 @@ var (
 	entTxKeyBase     = "ent-tx-"
 )
 
-func WithEntClient(client ent.EntClient, name string) gin.HandlerFunc {
-	key := entClientKeyBase + name
+type EntKey[C ent.EntClient] string
+
+func EntKeyForClient[C ent.EntClient](_ C, name string) EntKey[C] {
+	return EntKey[C](name)
+}
+func EntKeyForTx[C ent.EntClient, T ent.EntTx[C]](_ T, name string) EntKey[C] {
+	return EntKey[C](name)
+}
+
+func WithEntClient[C ent.EntClient](client C, name EntKey[C]) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Set(key, client)
+		c.Set(entClientKeyBase+string(name), client)
 	}
 }
 
-func Client(c *gin.Context, name string) ent.EntClient {
+func Client[C ent.EntClient](c *gin.Context, name EntKey[C]) C {
 	// TODO: could have this check for an active transaction and return the
 	// transactional client instead in that case
-	return c.MustGet(entClientKeyBase + name).(ent.EntClient)
+	return c.MustGet(entClientKeyBase + string(name)).(C)
 }
 
 type TransactionControl func(*gin.Context, *sql.TxOptions) bool
 
-func WithTransaction(
-	name string,
+func WithTransaction[C ent.EntClient](
+	name EntKey[C],
 	opts *sql.TxOptions,
 	controls ...TransactionControl,
 ) gin.HandlerFunc {
-	txKey := entTxKeyBase + name
+	txKey := entTxKeyBase + string(name)
 	logger := logging.GetLogger("middleware/ent")
 	if opts == nil {
 		opts = &sql.TxOptions{}
@@ -112,6 +120,6 @@ func WithTransaction(
 	}
 }
 
-func Transaction(c *gin.Context, name string) ent.EntTx {
-	return c.MustGet(entTxKeyBase + name).(ent.EntTx)
+func Transaction[C ent.EntClient, T ent.EntTx[C]](c *gin.Context, name EntKey[C]) T {
+	return c.MustGet(entTxKeyBase + string(name)).(T)
 }

@@ -29,9 +29,10 @@ import (
 
 // FUTURE: it'd be nice if ent itself provided these common-baseline interfaces
 
-type EntTx interface {
+type EntTx[C EntClient] interface {
 	Commit() error
 	Rollback() error
+	Client() C
 }
 
 type EntClient interface {
@@ -39,7 +40,7 @@ type EntClient interface {
 
 	GetSchema() EntClientSchema
 
-	BeginTxGeneric(ctx context.Context, opts *sql.TxOptions) (EntTx, error)
+	BeginTxGeneric(ctx context.Context, opts *sql.TxOptions) (EntTx[EntClient], error)
 
 	EntityClient(string) EntityClient
 }

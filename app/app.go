@@ -260,7 +260,7 @@ func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Dr
 
 func (app *App) setupGin(ctx context.Context, client ent.EntClient) (*gin.Engine, error) {
 	engine := server.NewEngine()
-	engine.Use(ginmiddleware.WithEntClient(client, db.GetDefaultDbName()))
+	engine.Use(ginmiddleware.WithEntClient(client, ginmiddleware.EntKeyForClient(client, db.GetDefaultDbName())))
 
 	// Enable `format: uuid` validation
 	openapi3.DefineStringFormat("uuid", openapi3.FormatOfStringForUUIDOfRFC4122)
