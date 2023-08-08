@@ -67,7 +67,7 @@ type App struct {
 	// them with the Migrator.
 	InitDbMigration func(ctx context.Context, m *migrate.Migrator) error
 
-	InitEnt func(ctx context.Context, drv *sql.Driver, logger func(args ...interface{}), debug bool) (ent.EntClient, error)
+	InitEnt func(ctx context.Context, drv *sql.Driver, logger func(args ...interface{}), debug bool) (ent.EntClientBase, error)
 
 	// LoadOASSpec provides a hook for enabling OAS validation middleware, using
 	// the returned swagger spec.
@@ -122,7 +122,7 @@ func (app *App) WithDefaults() *App {
 }
 
 var (
-	entClientKey    = registry.InterfaceAt[ent.EntClient]("ent-client")
+	entClientKey    = registry.InterfaceAt[ent.EntClientBase]("ent-client")
 	pubsubClientKey = registry.InterfaceAt[pubsub.Client]("pubsub-client")
 )
 
@@ -160,7 +160,7 @@ func (app *App) Main() (err error) {
 		return err
 	}
 
-	var client ent.EntClient
+	var client ent.EntClientBase
 	// client.Close() just is a wrapper around drv.Close(), so we don't need to
 	// setup a separate defer for it
 	if client, err = app.setupDB(ctx, logger, drv); err != nil {
@@ -199,9 +199,9 @@ func (app *App) Main() (err error) {
 	return app.Registry.RunDefault(ctx, client, logger)
 }
 
-func (app *App) EntClient() (ent.EntClient, bool) {
+func (app *App) EntClient() (ent.EntClientBase, bool) {
 	c, ok := app.Value(entClientKey)
-	return c.(ent.EntClient), ok
+	return c.(ent.EntClientBase), ok
 }
 
 func (app *App) PubsubClient() (pubsub.Client, bool) {
@@ -230,7 +230,7 @@ func (app *App) openDB(ctx context.Context, logger *logging.Logger) (drv *sql.Dr
 	return drv, nil
 }
 
-func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Driver) (client ent.EntClient, err error) {
+func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Driver) (client ent.EntClientBase, err error) {
 	sqlLogger := logging.GetLogger(app.Name + "/sql")
 	sqlLoggerFunc := func(args ...interface{}) {
 		for _, m := range args {
@@ -258,7 +258,7 @@ func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Dr
 	return client, nil
 }
 
-func (app *App) setupGin(ctx context.Context, client ent.EntClient) (*gin.Engine, error) {
+func (app *App) setupGin(ctx context.Context, client ent.EntClientBase) (*gin.Engine, error) {
 	engine := server.NewEngine()
 	engine.Use(ginmiddleware.WithEntClient(client, ginmiddleware.EntKeyForClient(client, db.GetDefaultDbName())))
 

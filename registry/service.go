@@ -31,7 +31,7 @@ type Service interface {
 
 	// Initialize should do any prep work for the service, but not actually start
 	// it yet. The context should only be used for the duration of the initialization.
-	Initialize(context.Context, *Registry, ent.EntClient) error
+	Initialize(context.Context, *Registry, ent.EntClientBase) error
 
 	// Start runs the service. It will be invoked on a goroutine, so it should
 	// block and not return until the context is canceled, which is how the

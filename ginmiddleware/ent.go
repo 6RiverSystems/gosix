@@ -33,22 +33,22 @@ var (
 	entTxKeyBase     = "ent-tx-"
 )
 
-type EntKey[C ent.EntClient] string
+type EntKey[C ent.EntClient[T], T ent.EntTx[C]] string
 
-func EntKeyForClient[C ent.EntClient](_ C, name string) EntKey[C] {
-	return EntKey[C](name)
+func EntKeyForClient[C ent.EntClient[T], T ent.EntTx[C]](_ C, name string) EntKey[C, T] {
+	return EntKey[C, T](name)
 }
-func EntKeyForTx[C ent.EntClient, T ent.EntTx[C]](_ T, name string) EntKey[C] {
-	return EntKey[C](name)
+func EntKeyForTx[C ent.EntClient[T], T ent.EntTx[C]](_ T, name string) EntKey[C, T] {
+	return EntKey[C, T](name)
 }
 
-func WithEntClient[C ent.EntClient](client C, name EntKey[C]) gin.HandlerFunc {
+func WithEntClient[C ent.EntClient[T], T ent.EntTx[C]](client C, name EntKey[C, T]) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set(entClientKeyBase+string(name), client)
 	}
 }
 
-func Client[C ent.EntClient](c *gin.Context, name EntKey[C]) C {
+func Client[C ent.EntClient[T], T ent.EntTx[C]](c *gin.Context, name EntKey[C, T]) C {
 	// TODO: could have this check for an active transaction and return the
 	// transactional client instead in that case
 	return c.MustGet(entClientKeyBase + string(name)).(C)
@@ -56,11 +56,15 @@ func Client[C ent.EntClient](c *gin.Context, name EntKey[C]) C {
 
 type TransactionControl func(*gin.Context, *sql.TxOptions) bool
 
-func WithTransaction[C ent.EntClient](
-	name EntKey[C],
+func WithTransaction[C ent.EntClient[T], T ent.EntTx[C]](
+	name EntKey[C, T],
 	opts *sql.TxOptions,
 	controls ...TransactionControl,
 ) gin.HandlerFunc {
+	// due to generics, we can't directly compare T to nil, so we need to track
+	// "discard" separately
+	finishedTx := false
+
 	txKey := entTxKeyBase + string(name)
 	logger := logging.GetLogger("middleware/ent")
 	if opts == nil {
@@ -82,7 +86,7 @@ func WithTransaction[C ent.EntClient](
 			return
 		}
 
-		tx, err := client.BeginTxGeneric(c.Request.Context(), &txOpts)
+		tx, err := client.BeginTx(c.Request.Context(), &txOpts)
 		if err != nil {
 			// TODO: avoid relying on gin's panic handling
 			panic(err)
@@ -91,7 +95,7 @@ func WithTransaction[C ent.EntClient](
 		// TODO: not sure this panic handling is correct
 		defer func() {
 			// if tx is non-nil, we must have panicked
-			if tx != nil {
+			if !finishedTx {
 				rbErr := tx.Rollback()
 				if rbErr != nil {
 					// nolint:errcheck // return value here is just a wrapped copy of the input
@@ -99,7 +103,7 @@ func WithTransaction[C ent.EntClient](
 					// we're about to re-panic, don't overwrite the original
 					logger.Err(rbErr).Msg("Failed to rollback during panic")
 				}
-				tx = nil
+				finishedTx = true
 			}
 		}()
 		c.Next()
@@ -116,10 +120,10 @@ func WithTransaction[C ent.EntClient](
 				c.Error(cErr)
 			}
 		}
-		tx = nil
+		finishedTx = true
 	}
 }
 
-func Transaction[C ent.EntClient, T ent.EntTx[C]](c *gin.Context, name EntKey[C]) T {
+func Transaction[C ent.EntClient[T], T ent.EntTx[C]](c *gin.Context, name EntKey[C, T]) T {
 	return c.MustGet(entTxKeyBase + string(name)).(T)
 }

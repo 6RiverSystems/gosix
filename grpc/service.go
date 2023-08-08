@@ -72,7 +72,7 @@ func (s *gatewayService) Name() string {
 	return "grpc-http-gateway(" + s.name + ")"
 }
 
-func (s *gatewayService) Initialize(_ context.Context, services *registry.Registry, _ entcommon.EntClient) error {
+func (s *gatewayService) Initialize(_ context.Context, services *registry.Registry, _ entcommon.EntClientBase) error {
 	s.logger = logging.GetLogger("grpc/http-gateway")
 	s.endpoint = "localhost:" + strconv.Itoa(server.ResolvePort(s.port, s.offset))
 	s.services = services

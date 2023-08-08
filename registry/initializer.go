@@ -27,7 +27,7 @@ import (
 
 type initializingService struct {
 	name        string
-	initializer func(ctx context.Context, services *Registry, client ent.EntClient) error
+	initializer func(ctx context.Context, services *Registry, client ent.EntClientBase) error
 	starter     func(ctx context.Context) error
 }
 
@@ -35,7 +35,7 @@ type initializingService struct {
 // steps at app startup, instead of actually running a background service
 func NewInitializer(
 	name string,
-	initializer func(ctx context.Context, services *Registry, client ent.EntClient) error,
+	initializer func(ctx context.Context, services *Registry, client ent.EntClientBase) error,
 	starter func(ctx context.Context) error,
 ) *initializingService {
 	return &initializingService{name, initializer, starter}
@@ -47,7 +47,7 @@ func (s *initializingService) Name() string {
 
 // Initialize should do any prep work for the service, but not actually start
 // it yet. The context should only be used for the duration of the initialization.
-func (s *initializingService) Initialize(ctx context.Context, services *Registry, client ent.EntClient) error {
+func (s *initializingService) Initialize(ctx context.Context, services *Registry, client ent.EntClientBase) error {
 	if s.initializer != nil {
 		return s.initializer(ctx, services, client)
 	}

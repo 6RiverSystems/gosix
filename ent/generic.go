@@ -29,20 +29,23 @@ import (
 
 // FUTURE: it'd be nice if ent itself provided these common-baseline interfaces
 
-type EntTx[C EntClient] interface {
+type EntTxBase interface {
 	Commit() error
 	Rollback() error
+}
+type EntTx[C EntClientBase] interface {
+	EntTxBase
 	Client() C
 }
 
-type EntClient interface {
+type EntClientBase interface {
 	Close() error
-
 	GetSchema() EntClientSchema
-
-	BeginTxGeneric(ctx context.Context, opts *sql.TxOptions) (EntTx[EntClient], error)
-
 	EntityClient(string) EntityClient
+}
+type EntClient[T EntTxBase] interface {
+	EntClientBase
+	BeginTx(ctx context.Context, opts *sql.TxOptions) (T, error)
 }
 
 type EntityClient interface {

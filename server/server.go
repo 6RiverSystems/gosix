@@ -54,7 +54,7 @@ func (s *httpService) Name() string {
 	}
 }
 
-func (s *httpService) Initialize(ctx context.Context, reg *registry.Registry, _ ent.EntClient) error {
+func (s *httpService) Initialize(ctx context.Context, reg *registry.Registry, _ ent.EntClientBase) error {
 	s.realPort = ResolvePort(s.defaultPort, s.offset)
 	s.logger = logging.GetLogger("server/gin-http/" + strconv.Itoa(s.realPort))
 	s.server = &http.Server{

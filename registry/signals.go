@@ -41,7 +41,7 @@ func (s *signalService) Name() string {
 	return fmt.Sprintf("shutdown-on-signals(%v)", s.signals)
 }
 
-func (s *signalService) Initialize(_ context.Context, services *Registry, _ ent.EntClient) error {
+func (s *signalService) Initialize(_ context.Context, services *Registry, _ ent.EntClientBase) error {
 	s.logger = logging.GetLogger("signals")
 	s.notify = make(chan os.Signal, 5)
 	s.services = services
