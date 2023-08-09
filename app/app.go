@@ -67,7 +67,7 @@ type App struct {
 	// them with the Migrator.
 	InitDbMigration func(ctx context.Context, m *migrate.Migrator) error
 
-	InitEnt func(ctx context.Context, drv *sql.Driver, logger func(args ...interface{}), debug bool) (ent.EntClient, error)
+	InitEnt func(ctx context.Context, drv *sql.Driver, logger func(args ...interface{}), debug bool) (ent.EntClientBase, error)
 
 	// LoadOASSpec provides a hook for enabling OAS validation middleware, using
 	// the returned swagger spec.
@@ -100,6 +100,8 @@ type App struct {
 
 	// App "ISA" DI root
 	registry.MutableValues
+
+	ginMiddleware []func(*gin.Engine) error
 }
 
 type AppGrpc struct {
@@ -122,7 +124,7 @@ func (app *App) WithDefaults() *App {
 }
 
 var (
-	entClientKey    = registry.InterfaceAt[ent.EntClient]("ent-client")
+	entClientKey    = registry.InterfaceAt[ent.EntClientBase]("ent-client")
 	pubsubClientKey = registry.InterfaceAt[pubsub.Client]("pubsub-client")
 )
 
@@ -160,7 +162,7 @@ func (app *App) Main() (err error) {
 		return err
 	}
 
-	var client ent.EntClient
+	var client ent.EntClientBase
 	// client.Close() just is a wrapper around drv.Close(), so we don't need to
 	// setup a separate defer for it
 	if client, err = app.setupDB(ctx, logger, drv); err != nil {
@@ -199,9 +201,9 @@ func (app *App) Main() (err error) {
 	return app.Registry.RunDefault(ctx, client, logger)
 }
 
-func (app *App) EntClient() (ent.EntClient, bool) {
+func (app *App) EntClient() (ent.EntClientBase, bool) {
 	c, ok := app.Value(entClientKey)
-	return c.(ent.EntClient), ok
+	return c.(ent.EntClientBase), ok
 }
 
 func (app *App) PubsubClient() (pubsub.Client, bool) {
@@ -230,7 +232,7 @@ func (app *App) openDB(ctx context.Context, logger *logging.Logger) (drv *sql.Dr
 	return drv, nil
 }
 
-func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Driver) (client ent.EntClient, err error) {
+func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Driver) (client ent.EntClientBase, err error) {
 	sqlLogger := logging.GetLogger(app.Name + "/sql")
 	sqlLoggerFunc := func(args ...interface{}) {
 		for _, m := range args {
@@ -242,6 +244,10 @@ func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Dr
 	if client, err = app.InitEnt(ctx, drv, sqlLoggerFunc, entDebug); err != nil {
 		return client, err
 	}
+	app.UseGinMiddleware(func(engine *gin.Engine) error {
+		engine.Use(ginmiddleware.WithEntClientBase(client, db.GetDefaultDbName()))
+		return nil
+	})
 	// Setup db prometheus metrics
 	prometheus.DefaultRegisterer.MustRegister(collectors.NewDBStatsCollector(drv.DB(), db.GetDefaultDbName()))
 
@@ -258,9 +264,17 @@ func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Dr
 	return client, nil
 }
 
-func (app *App) setupGin(ctx context.Context, client ent.EntClient) (*gin.Engine, error) {
+func (app *App) UseGinMiddleware(m func(*gin.Engine) error) {
+	app.ginMiddleware = append(app.ginMiddleware, m)
+}
+
+func (app *App) setupGin(ctx context.Context, client ent.EntClientBase) (*gin.Engine, error) {
 	engine := server.NewEngine()
-	engine.Use(ginmiddleware.WithEntClient(client, db.GetDefaultDbName()))
+	for _, m := range app.ginMiddleware {
+		if err := m(engine); err != nil {
+			return nil, err
+		}
+	}
 
 	// Enable `format: uuid` validation
 	openapi3.DefineStringFormat("uuid", openapi3.FormatOfStringForUUIDOfRFC4122)

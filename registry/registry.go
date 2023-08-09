@@ -73,7 +73,7 @@ func (r *Registry) Faults() *faults.Set {
 	return r.faults
 }
 
-func (r *Registry) RunDefault(ctx context.Context, client ent.EntClient, logger *logging.Logger) error {
+func (r *Registry) RunDefault(ctx context.Context, client ent.EntClientBase, logger *logging.Logger) error {
 	clean := false
 	var err error
 	defer func() {

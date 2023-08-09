@@ -43,7 +43,7 @@ import (
 	"go.6river.tech/gosix/server"
 )
 
-type GrpcInitializer func(context.Context, *grpc.Server, *registry.Registry, ent.EntClient) error
+type GrpcInitializer func(context.Context, *grpc.Server, *registry.Registry, ent.EntClientBase) error
 
 type grpcServer struct {
 	defaultPort  int
@@ -69,7 +69,7 @@ func (s *grpcServer) Name() string {
 // this is mostly just for tests, race wouldn't likely hit this in a real app
 var grpcPromInitOnce sync.Once
 
-func (s *grpcServer) Initialize(ctx context.Context, reg *registry.Registry, client ent.EntClient) error {
+func (s *grpcServer) Initialize(ctx context.Context, reg *registry.Registry, client ent.EntClientBase) error {
 	s.realPort = server.ResolvePort(s.defaultPort, s.offset)
 	s.logger = logging.GetLogger("server/grpc/" + strconv.Itoa(s.realPort))
 

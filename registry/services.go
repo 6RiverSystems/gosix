@@ -61,7 +61,7 @@ func (r *Registry) logger() *logging.Logger {
 
 // InitializeServices calls the Initialize method on all registered services, in
 // parallel in goroutines.
-func (r *Registry) InitializeServices(ctx context.Context, client ent.EntClient) error {
+func (r *Registry) InitializeServices(ctx context.Context, client ent.EntClientBase) error {
 	if r.initialized {
 		return errors.New("Cannot re-initialize services without cleanup")
 	}

@@ -63,7 +63,7 @@ func Up(
 
 	if !migrator.HasMigrations() || dialectName == SqliteDialect {
 		switch mdb := migrateVia.(type) {
-		case ent.EntClient:
+		case ent.EntClientBase:
 			err := MigrateUpEnt(ctx, mdb.GetSchema())
 			if err != nil {
 				return errors.Wrapf(err, "Failed Up migration via ent for %s", dialectName)
