@@ -35,14 +35,13 @@ var (
 
 type EntKey[C ent.EntClient[T], T ent.EntTx[C]] string
 
-func EntKeyForClient[C ent.EntClient[T], T ent.EntTx[C]](_ C, name string) EntKey[C, T] {
-	return EntKey[C, T](name)
-}
-func EntKeyForTx[C ent.EntClient[T], T ent.EntTx[C]](_ T, name string) EntKey[C, T] {
-	return EntKey[C, T](name)
+func WithEntClient[C ent.EntClient[T], T ent.EntTx[C]](client C, name EntKey[C, T]) gin.HandlerFunc {
+	return WithEntClientBase(client, string(name))
 }
 
-func WithEntClient[C ent.EntClient[T], T ent.EntTx[C]](client C, name EntKey[C, T]) gin.HandlerFunc {
+// TODO: we don't want to have this weakly typed version, but we need it to have
+// common app init
+func WithEntClientBase(client ent.EntClientBase, name string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set(entClientKeyBase+string(name), client)
 	}

@@ -100,6 +100,8 @@ type App struct {
 
 	// App "ISA" DI root
 	registry.MutableValues
+
+	ginMiddleware []func(*gin.Engine) error
 }
 
 type AppGrpc struct {
@@ -242,6 +244,10 @@ func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Dr
 	if client, err = app.InitEnt(ctx, drv, sqlLoggerFunc, entDebug); err != nil {
 		return client, err
 	}
+	app.UseGinMiddleware(func(engine *gin.Engine) error {
+		engine.Use(ginmiddleware.WithEntClientBase(client, db.GetDefaultDbName()))
+		return nil
+	})
 	// Setup db prometheus metrics
 	prometheus.DefaultRegisterer.MustRegister(collectors.NewDBStatsCollector(drv.DB(), db.GetDefaultDbName()))
 
@@ -258,9 +264,17 @@ func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Dr
 	return client, nil
 }
 
+func (app *App) UseGinMiddleware(m func(*gin.Engine) error) {
+	app.ginMiddleware = append(app.ginMiddleware, m)
+}
+
 func (app *App) setupGin(ctx context.Context, client ent.EntClientBase) (*gin.Engine, error) {
 	engine := server.NewEngine()
-	engine.Use(ginmiddleware.WithEntClient(client, ginmiddleware.EntKeyForClient(client, db.GetDefaultDbName())))
+	for _, m := range app.ginMiddleware {
+		if err := m(engine); err != nil {
+			return nil, err
+		}
+	}
 
 	// Enable `format: uuid` validation
 	openapi3.DefineStringFormat("uuid", openapi3.FormatOfStringForUUIDOfRFC4122)
