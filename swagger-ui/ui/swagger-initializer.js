@@ -1,13 +1,17 @@
 
 window.onload = function() {
-  //<editor-fold desc="Changeable Configuration Block">
-
-  // the following lines will be replaced by docker/configurator, when it runs in a docker-container
-  window.ui = SwaggerUIBundle({
-    configUrl: '../oas-ui-config',
-    dom_id: '#swagger-ui',
-    deepLinking: true,
-    presets: [
+	window.ui = SwaggerUIBundle({
+		configUrl: '../oas-ui-config',
+		dom_id: "#swagger-ui",
+		deepLinking: true,
+		layout: "StandaloneLayout",
+		displayOperationId: true,
+		docExpansion: "none",
+		queryConfigEnabled: true,
+		showCommonExtensions: true,
+		tryItOutEnabled: true,
+		withCredentials: true,
+		presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
     ],

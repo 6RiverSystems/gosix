@@ -27,12 +27,9 @@ import (
 const ConfigLoadingPath = "/oas-ui-config"
 
 // setting anything except url(s) from the dynamic config may not work, see
-// upstream bug https://github.com/swagger-api/swagger-ui/issues/4455
+// upstream bug https://github.com/swagger-api/swagger-ui/issues/4455.
 var defaultConfig json.RawMessage = ([]byte)(`{
 	"url": "../oas/openapi.yaml",
-	"dom_id": "#swagger-ui",
-	"deepLinking": true,
-	"layout": "StandaloneLayout"
 }`)
 
 func DefaultConfigHandler() http.HandlerFunc {
