@@ -136,7 +136,7 @@ func ParseDefault() (driverName, dialectName, dsn string, err error) {
 		driverName = SQLiteDriverName
 		// driverName = "sqlite" // for modernc driver, in the future
 		dialectName = SqliteDialect
-	} else if strings.HasPrefix(dsn, "postgres") {
+	} else if strings.HasPrefix(dsn, "postgres:") {
 		driverName = "pgx"
 		dialectName = PostgresDialect
 	} else {
