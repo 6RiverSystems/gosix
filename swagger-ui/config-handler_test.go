@@ -1,4 +1,4 @@
-// Copyright (c) 2021 6 River Systems
+// Copyright (c) 2023 6 River Systems
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -21,41 +21,13 @@ package swaggerui
 
 import (
 	"encoding/json"
-	"net/http"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-const ConfigLoadingPath = "/oas-ui-config"
-
-// setting anything except url(s) from the dynamic config may not work, see
-// upstream bug https://github.com/swagger-api/swagger-ui/issues/4455.
-var defaultConfig json.RawMessage = ([]byte)(`{
-	"url": "../oas/openapi.yaml"
-}`)
-
-func DefaultConfigHandler() http.HandlerFunc {
-	return CustomConfigHandler(func(config map[string]any) map[string]any { return config })
-}
-
-func CustomConfigHandler(
-	customizer func(map[string]any) map[string]any,
-) http.HandlerFunc {
+func Test_defaultConfig(t *testing.T) {
 	var config map[string]any
-	var err error
-	if err = json.Unmarshal(defaultConfig, &config); err != nil {
-		// this should really be a compile error
-		panic(err)
-	}
-	config = customizer(config)
-	var msg []byte
-	if msg, err = json.Marshal(config); err != nil {
-		panic(err)
-	}
-	return func(writer http.ResponseWriter, req *http.Request) {
-		defer req.Body.Close()
-		writer.Header().Add("Content-type", "application/json; charset=utf-8")
-		if _, err := writer.Write(msg); err != nil {
-			// this assumes we have recovery middleware
-			panic(err)
-		}
-	}
+	err := json.Unmarshal(defaultConfig, &config)
+	assert.NoError(t, err, "default config must unmarshal")
 }
