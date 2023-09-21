@@ -217,6 +217,10 @@ func FormatGenerated(ctx context.Context) error {
 			files = append(files, l)
 		}
 	}
+	if len(files) == 0 {
+		// nothing to do
+		return nil
+	}
 	if err := sh.Run("go", append([]string{"run", "mvdan.cc/gofumpt", "-l", "-w", "."}, files...)...); err != nil {
 		return err
 	}

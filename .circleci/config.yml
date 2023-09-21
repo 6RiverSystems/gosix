@@ -65,7 +65,7 @@ jobs:
           # be committed
           name: Verify committed generated code is up to date
           command: |
-            ./mage -v cleanGenerated generate:force
+            ./mage -v cleanGenerated generate:force formatGenerated
             git diff --exit-code
 
       - run:
