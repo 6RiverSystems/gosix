@@ -37,19 +37,23 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"regexp"
 
 	"github.com/pkg/errors"
 )
 
-// update this by running: `npm view swagger-ui-dist@latest --json .dist`
+// update this by running: `npm view swagger-ui-dist@latest --json dist`
 var swaggerUiDistInfo = `{
-  "integrity": "sha512-ueaZ45OHhHvGKmocvCkxFY8VCfbP5PgcxutoQxy9j8/VZeDoLDvg8FBf4SO6NxHhieNAdYPUd0O6G9FjJO2fqw==",
-  "shasum": "f08d2c9b4a2dce922ba363c598e4795b5ccf0b80",
-  "tarball": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-3.46.0.tgz",
-  "fileCount": 20,
-  "unpackedSize": 18917597,
-  "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgZMUFCRA9TVsSAnZWagAAZKcP/14/rrHJgUel//wjq6zk\nKZEXL3lMJhxleZP/Zum5MJmVOaEJHhttbkYdo/o+YL7E5CUvDg3dzk3ryTtB\nX+oG1Pp5rGDLBoc62l+V3Y7iEAM5j86kf1lTmPBt7ua2sxDb0WIFNKa3GUFw\n7BZuWCGx78lifw5xJAKjp4sNe72twn+y4ZyUPhz5OL/owxyFlAs+5zZzia9x\nHSTt3zhUUFIG8EPYA29x+wH97KIBh99zGgtvvLalk1NbH6lmr7HxHmp6EHnX\nPjV54KUalJUgUBdBYIAdAEP9v+5oQg8CxqDac5sAYMI3r13xgSEDcYk8GQZt\n1FG30f/APBhHDUuMD7peZV9graXYTHKh5FCQq4cnRy4GsbhS9UpJFVFXWAS1\n/0pH1kkcEuQwTwIuCq1jnQKWxJA77ETJtqqfjoYxiUBevN7m+cfhiPLGrGpz\njO6VXnjKaInq0SMa8Y19DPpMK5xWnVmwB+6Xiw+x8PKlpiBoaFRmnQ/NIrqB\npoV+naVODuDeRuCdnUr4HYp1Y9Qv58HmukPRqf+KyHvyWhHL/az1ZTAmLvsF\nduxTe7FsOzc4S77WF9QwFlsbiHrNl99xxoEPN9/GQy1cw9kw0bfIHtQ5wsVL\nrTvncyfGmnt7d5AvO2ebq9HprkzRRRPrjTlQEBDNr9ZtxaDtEd4kueLspCoN\nUDWi\r\n=raRa\r\n-----END PGP SIGNATURE-----\r\n"
+  "integrity": "sha512-mVZc9QVQ6pTCV5crli3+Ng+DoMPwdtMHK8QLk2oX8Mtamp4D/hV+uYdC3lV0JZrDgpNEcjs0RrWTqMwwosuLPQ==",
+  "shasum": "b783568cc7f494a9ad9173c9c98fd0cbbb5c851a",
+  "tarball": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.7.2.tgz",
+  "fileCount": 24,
+  "unpackedSize": 10285797,
+  "signatures": [
+    {
+      "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+      "sig": "MEYCIQDYszyWh8psYMpwtXLxFLvHXG5zgFprhINcAeYt/7kQFAIhAKN+H59E7EJum7ptBQTPIItTAS8SL1ROpbi9DffeVSLh"
+    }
+  ]
 }`
 
 func main() {
@@ -101,41 +105,8 @@ func main() {
 
 		// we only want certain files
 		switch h.Name {
-		case "package/index.html":
-			// we "patch" this one in-place
-			fileData, err := io.ReadAll(tReader)
-			if err != nil {
-				panic(err)
-			}
-			fileContent := string(fileData)
-			// replace the "call region" with a custom invocation that loads config
-			// from a URL, so that apps can customize it
-			callRegionMatch := regexp.MustCompile(`(?s)// Begin Swagger UI call region.*// End Swagger UI call region`)
-			fileContent = callRegionMatch.ReplaceAllString(
-				fileContent,
-				// TODO: share the configUrl path with the main swaggerui package
-				// the presets and plugin bits are code, not json, so we can't move them
-				// into the configUrl. other bits stay here because of
-				// https://github.com/swagger-api/swagger-ui/issues/4455 causing them to
-				// not load correctly from the url
-				`const ui = SwaggerUIBundle({
-					configUrl: '../oas-ui-config',
-					dom_id: '#swagger-ui',
-					deepLinking: true,
-					layout: 'StandaloneLayout',
-					presets: [
-						SwaggerUIBundle.presets.apis,
-						SwaggerUIStandalonePreset
-					],
-					plugins: [
-						SwaggerUIBundle.plugins.DownloadUrl
-					],
-				})`,
-			)
-			if err = os.WriteFile(path.Join("ui", path.Base(h.Name)), []byte(fileContent), 0o666); err != nil { // umask again
-				panic(err)
-			}
-		case "package/favicon-16x16.png",
+		case "package/index.html",
+			"package/favicon-16x16.png",
 			"package/favicon-32x32.png",
 			"package/swagger-ui-bundle.js",
 			// "package/swagger-ui-bundle.js.map",
@@ -147,10 +118,44 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			if err = os.WriteFile(path.Join("ui", path.Base(h.Name)), fileData, 0o666); err != nil { // umask again
+			if err = os.WriteFile(path.Join("ui", path.Base(h.Name)), fileData, 0o666); err != nil {
 				panic(err)
 			}
-
+		case "package/swagger-initializer.js":
+			// retain the original file for comparisons, but always keep our custom file
+			fileData, err := io.ReadAll(tReader)
+			if err != nil {
+				panic(err)
+			}
+			if err = os.WriteFile(path.Join("ui", "swagger-initializer.orig.js"), fileData, 0o666); err != nil {
+				panic(err)
+			}
+			if err = os.WriteFile(path.Join("ui", "swagger-initializer.js"), []byte(customInitializerContent), 0o666); err != nil {
+				panic(err)
+			}
 		}
 	}
 }
+
+const customInitializerContent = `
+window.onload = function() {
+  //<editor-fold desc="Changeable Configuration Block">
+
+  // the following lines will be replaced by docker/configurator, when it runs in a docker-container
+  window.ui = SwaggerUIBundle({
+    configUrl: '../oas-ui-config',
+    dom_id: '#swagger-ui',
+    deepLinking: true,
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    plugins: [
+      SwaggerUIBundle.plugins.DownloadUrl
+    ],
+    layout: "StandaloneLayout"
+  });
+
+  //</editor-fold>
+};
+`
