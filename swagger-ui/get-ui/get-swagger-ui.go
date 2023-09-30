@@ -112,7 +112,8 @@ func main() {
 			// "package/swagger-ui-bundle.js.map",
 			"package/swagger-ui-standalone-preset.js",
 			// "package/swagger-ui-standalone-preset.js.map",
-			"package/swagger-ui.css":
+			"package/swagger-ui.css",
+			"package/index.css":
 			// write this into the ui dir
 			fileData, err := io.ReadAll(tReader)
 			if err != nil {
