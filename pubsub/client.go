@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"google.golang.org/api/option"
 )
 
@@ -69,6 +68,7 @@ type monitoredClient struct {
 func NewClient(
 	ctx context.Context,
 	projectID string,
+	promReg prometheus.Registerer,
 	promNamespace string,
 	promLabels prometheus.Labels,
 	opts ...option.ClientOption,
@@ -105,17 +105,17 @@ func NewClient(
 		}, []string{"topic"}
 	}
 
-	return &monitoredClient{
+	client := &monitoredClient{
 		Client:     ps,
 		isEmulator: isEmulator,
 
-		publishStarted: promauto.NewCounterVec(po("publish_started", "Number of pubsub messages attempted to send")),
-		published:      promauto.NewCounterVec(po("published", "Number of pubsub messages successfully sent")),
-		publishFailed:  promauto.NewCounterVec(po("publish_failed", "Number of pubsub messages failed to send")),
+		publishStarted: prometheus.NewCounterVec(po("publish_started", "Number of pubsub messages attempted to send")),
+		published:      prometheus.NewCounterVec(po("published", "Number of pubsub messages successfully sent")),
+		publishFailed:  prometheus.NewCounterVec(po("publish_failed", "Number of pubsub messages failed to send")),
 
-		messagesReceived: promauto.NewCounterVec(po("messages_received", "Number of pubsub messages received")),
+		messagesReceived: prometheus.NewCounterVec(po("messages_received", "Number of pubsub messages received")),
 
-		messageDuration: promauto.NewHistogramVec(
+		messageDuration: prometheus.NewHistogramVec(
 			prometheus.HistogramOpts{
 				Namespace:   promNamespace,
 				Subsystem:   "pubsub",
@@ -131,7 +131,18 @@ func NewClient(
 			},
 			[]string{"subscription", "outcome"},
 		),
-	}, nil
+	}
+	if promReg != nil {
+		for _, c := range []prometheus.Collector{
+			client.publishStarted, client.published, client.publishFailed,
+			client.messagesReceived, client.messageDuration,
+		} {
+			if err := promReg.Register(c); err != nil {
+				return client, err
+			}
+		}
+	}
+	return client, nil
 }
 
 func (c *monitoredClient) IsEmulator() bool {

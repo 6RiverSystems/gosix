@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"os"
 	"sync"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
@@ -66,6 +68,7 @@ func DefaultClient(promNamespace string) (Client, error) {
 		defaultClient, defaultClientErr = NewClient(
 			context.Background(),
 			"",
+			prometheus.DefaultRegisterer,
 			promNamespace,
 			nil,
 		)
