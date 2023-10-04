@@ -22,6 +22,7 @@ package mixins
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"entgo.io/ent"
@@ -29,7 +30,6 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 )
 
 // EventStream is a mixin that provides the standard schema for the sixriver
@@ -77,7 +77,7 @@ func (EventStream) Hooks() []ent.Hook {
 		func(next ent.Mutator) ent.Mutator {
 			return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 				if !m.Op().Is(ent.OpCreate) {
-					return nil, errors.Errorf("%s operation is not allowed", m.Op())
+					return nil, fmt.Errorf("%s operation is not allowed", m.Op())
 				}
 				return next.Mutate(ctx, m)
 			})

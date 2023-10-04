@@ -25,8 +25,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/pkg/errors"
-
 	"go.6river.tech/gosix/migrate"
 )
 
@@ -52,7 +50,7 @@ func EventMigrationsFor(schema, table string) []migrate.Migration {
 	entries, err := migrationsFS.ReadDir(".")
 	if err != nil {
 		// this should never happen
-		panic(errors.Wrap(err, "Unable to list embedded migrations"))
+		panic(fmt.Errorf("Unable to list embedded migrations: %w", err))
 	}
 	ret := make([]migrate.Migration, 0, len(entries))
 	for _, entry := range entries {
@@ -64,14 +62,14 @@ func EventMigrationsFor(schema, table string) []migrate.Migration {
 		}
 		migrationName := strings.TrimSuffix(baseName, ".up")
 		if migrationName == baseName {
-			panic(errors.Errorf("Unexpected non-up migration found in embedded migrations: %s", baseName))
+			panic(fmt.Errorf("Unexpected non-up migration found in embedded migrations: %s", baseName))
 		}
 		ret = append(ret, migrate.FromContent(
 			migrationName,
 			func() (string, error) {
 				content, err := migrationsFS.ReadFile(name)
 				if err != nil {
-					return "", errors.Wrapf(err, "Unable to read embedded migration %s", name)
+					return "", fmt.Errorf("Unable to read embedded migration %s: %w", name, err)
 				}
 				t := template.New(baseName)
 				_, err = t.Parse(string(content))

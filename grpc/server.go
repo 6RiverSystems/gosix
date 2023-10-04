@@ -21,6 +21,7 @@ package grpc
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"strconv"
@@ -29,7 +30,6 @@ import (
 	"time"
 
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -205,7 +205,7 @@ func (s *grpcServer) Start(ctx context.Context, ready chan<- struct{}) error {
 	if err != nil {
 		s.logger.Error().Err(err).Msg("Failed to open gRPC listen socket")
 
-		return errors.Wrap(err, "Failed to open listen port for grpc server")
+		return fmt.Errorf("Failed to open listen port for grpc server: %w", err)
 	}
 
 	// ask the server to stop when the context is canceled

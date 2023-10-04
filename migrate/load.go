@@ -20,11 +20,10 @@
 package migrate
 
 import (
+	"fmt"
 	"io/fs"
 	"regexp"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 var nameRegex = regexp.MustCompile(`^(.*)[.-](up|down).sql$`)
@@ -41,7 +40,7 @@ func LoadFS(
 
 		m := nameRegex.FindStringSubmatch(fn)
 		if m == nil {
-			return errors.Errorf("Entry '%s' does not look like a migration", fn)
+			return fmt.Errorf("Entry '%s' does not look like a migration", fn)
 		}
 		name, direction := m[1], m[2]
 		// for compatibility with db-migrate, where things are always scope/name,
@@ -63,12 +62,12 @@ func LoadFS(
 		}
 		if direction == "up" {
 			if e.up != nil {
-				return errors.Errorf("Multiple up entries for '%s'", name)
+				return fmt.Errorf("Multiple up entries for '%s'", name)
 			}
 			e.up = content
 		} else {
 			if e.down != nil {
-				return errors.Errorf("Multiple down entries for '%s'", name)
+				return fmt.Errorf("Multiple down entries for '%s'", name)
 			}
 			e.down = content
 		}

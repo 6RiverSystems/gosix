@@ -22,12 +22,12 @@ package migrate
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"io/fs"
 	"sort"
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
 )
 
 type Migrator struct {
@@ -129,23 +129,23 @@ func (m *Migrator) run(
 	direction Direction,
 ) error {
 	if err := m.dialect.Verify(db); err != nil {
-		return errors.Wrap(err, "DB connection is no good")
+		return fmt.Errorf("DB connection is no good: %w", err)
 	}
 
 	if err := m.dialect.EnsureMigrationsTable(ctx, db, m.config); err != nil {
-		return errors.Wrap(err, "Failed ensuring migrations state table exists")
+		return fmt.Errorf("Failed ensuring migrations state table exists: %w", err)
 	}
 
 	states, err := m.loadStates(ctx, db)
 	if err != nil {
-		return errors.Wrap(err, "Failed to load migration states")
+		return fmt.Errorf("Failed to load migration states: %w", err)
 	}
 
 	todo := m.toRun(direction, states)
 
 	for _, mm := range todo {
 		if err = m.runOne(ctx, db, mm, direction); err != nil {
-			return errors.Wrapf(err, "Failed to run migration %s", mm.Name())
+			return fmt.Errorf("Failed to run migration %s: %w", mm.Name(), err)
 		}
 	}
 

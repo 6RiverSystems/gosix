@@ -29,7 +29,6 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 
 	"go.6river.tech/gosix/ent"
@@ -64,7 +63,7 @@ func (s *httpService) Initialize(ctx context.Context, reg *registry.Registry, _ 
 	}
 
 	if err := reg.StartControllers(ctx, s.handler, s.server); err != nil {
-		return errors.Wrap(err, "Registry startup failed")
+		return fmt.Errorf("Registry startup failed: %w", err)
 	}
 
 	return nil
@@ -121,7 +120,7 @@ func (s *httpService) Cleanup(ctx context.Context, reg *registry.Registry) error
 	// handler is the gin router/engine, and not some non-gin middleware layer.
 	err := reg.ShutdownControllers(ctx, s.handler, s.server)
 	if err != nil {
-		return errors.Wrap(err, "Registry shutdown failed")
+		return fmt.Errorf("Registry shutdown failed: %w", err)
 	}
 
 	return err

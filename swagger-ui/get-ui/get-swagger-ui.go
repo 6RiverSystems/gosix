@@ -33,12 +33,12 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path"
-
-	"github.com/pkg/errors"
 )
 
 // update this by running: `npm view swagger-ui-dist@latest --json dist`
@@ -79,7 +79,7 @@ func main() {
 		panic(err)
 	}
 	if !bytes.Equal(actualSha1[:], correctSha1) {
-		panic(errors.Errorf("swagger-ui-dist sha1 mismatch, want %s got %s", distInfo["shasum"], hex.EncodeToString(actualSha1[:])))
+		panic(fmt.Errorf("swagger-ui-dist sha1 mismatch, want %s got %s", distInfo["shasum"], hex.EncodeToString(actualSha1[:])))
 	}
 	zReader, err := gzip.NewReader(bytes.NewReader(buf))
 	if err != nil {

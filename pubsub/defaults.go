@@ -21,10 +21,9 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"sync"
-
-	"github.com/pkg/errors"
 )
 
 const (
@@ -43,12 +42,12 @@ func DefaultProjectId() string {
 		case "development":
 			envId = "development"
 		case "production":
-			panic(errors.Errorf("Can't guess pubsub project in production"))
+			panic(fmt.Errorf("Can't guess pubsub project in production"))
 		default:
 			// assume development
 			// TODO: detect production?
 			envId = "development"
-			// panic(errors.Errorf("Unrecognized environment '%s'", envName))
+			// panic(fmt.Errorf("Unrecognized environment '%s'", envName))
 		}
 	}
 	return envId
@@ -79,7 +78,7 @@ func MustDefaultClient() Client {
 		panic(defaultClientErr)
 	}
 	if defaultClient == nil {
-		panic(errors.Errorf("No default client initialized yet"))
+		panic(fmt.Errorf("No default client initialized yet"))
 	}
 	return defaultClient
 }

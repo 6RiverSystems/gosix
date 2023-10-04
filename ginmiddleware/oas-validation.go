@@ -20,6 +20,8 @@
 package ginmiddleware
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -27,7 +29,6 @@ import (
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/getkin/kin-openapi/routers/legacy"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 )
 
 type OASErrorHandler func(c *gin.Context, err error)
@@ -40,7 +41,7 @@ func WithOASValidation(
 ) gin.HandlerFunc {
 	oasRouter, err := legacy.NewRouter(spec)
 	if err != nil {
-		panic(errors.Wrap(err, "unable to create a router for the given openapi schema"))
+		panic(fmt.Errorf("unable to create a router for the given openapi schema: %w", err))
 	}
 	if errorHandler == nil {
 		errorHandler = DefaultOASErrorHandler

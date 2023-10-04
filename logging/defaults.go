@@ -27,14 +27,12 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/rs/zerolog/pkgerrors"
 )
 
 var defaultLoggingOnce = &sync.Once{}
 
 func ConfigureDefaultLogging() {
 	defaultLoggingOnce.Do(func() {
-		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 		// always log in UTC, with accurate timestamps
 		zerolog.TimestampFunc = func() time.Time {
 			return time.Now().UTC()
@@ -43,7 +41,6 @@ func ConfigureDefaultLogging() {
 		// NodeJS/bunyan uses "msg" for MessageFieldName, but that's bad for LogDNA,
 		// so don't do that here; do make error logging consistent with NodeJS however
 		zerolog.ErrorFieldName = "err"
-		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
 		levelStr := os.Getenv("LOG_LEVEL")
 		if levelStr != "" {

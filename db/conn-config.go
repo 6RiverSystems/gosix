@@ -22,6 +22,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -33,7 +34,6 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/stdlib"
-	"github.com/pkg/errors"
 
 	"go.6river.tech/gosix/db/postgres"
 	"go.6river.tech/gosix/logging"
@@ -140,7 +140,7 @@ func ParseDefault() (driverName, dialectName, dsn string, err error) {
 		driverName = "pgx"
 		dialectName = PostgresDialect
 	} else {
-		return "", "", dsn, errors.Errorf("Unrecognized db url '%s'", dsn)
+		return "", "", dsn, fmt.Errorf("Unrecognized db url '%s'", dsn)
 	}
 	return
 }
@@ -171,7 +171,7 @@ func Open(driverName, dialectName, dsn string) (db *sql.DB, err error) {
 	} else {
 		db, err = sql.Open(driverName, dsn)
 		if err != nil {
-			err = errors.Wrap(err, "Failed to open default DB connection")
+			err = fmt.Errorf("Failed to open default DB connection: %w", err)
 		}
 	}
 

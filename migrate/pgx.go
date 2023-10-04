@@ -21,12 +21,12 @@ package migrate
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
 
 	"go.6river.tech/gosix/db/postgres"
 )
@@ -48,7 +48,7 @@ func (p *PgxDialect) DefaultConfig() *Config {
 
 func (p *PgxDialect) Verify(db *sqlx.DB) error {
 	if _, ok := db.Driver().(*stdlib.Driver); !ok {
-		return errors.Errorf("Cannot use Pgx dialect without pgx driver")
+		return fmt.Errorf("Cannot use Pgx dialect without pgx driver")
 	}
 	return nil
 }

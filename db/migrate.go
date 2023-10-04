@@ -21,10 +21,10 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
 
 	"go.6river.tech/gosix/ent"
 	"go.6river.tech/gosix/migrate"
@@ -58,7 +58,7 @@ func Up(
 		defer sql.Close()
 	}
 	if err != nil {
-		return errors.Wrap(err, "Failed to connect to DB for Up migration")
+		return fmt.Errorf("Failed to connect to DB for Up migration: %w", err)
 	}
 
 	if !migrator.HasMigrations() || dialectName == SqliteDialect {
@@ -66,11 +66,11 @@ func Up(
 		case ent.EntClientBase:
 			err := MigrateUpEnt(ctx, mdb.GetSchema())
 			if err != nil {
-				return errors.Wrapf(err, "Failed Up migration via ent for %s", dialectName)
+				return fmt.Errorf("Failed Up migration via ent for %s: %w", dialectName, err)
 			}
 			return nil
 		default:
-			return errors.Errorf("Unrecognized migrateVia for %s: %T", dialectName, migrateVia)
+			return fmt.Errorf("Unrecognized migrateVia for %s: %T", dialectName, migrateVia)
 		}
 	}
 
@@ -79,7 +79,7 @@ func Up(
 		migrator = migrator.WithDialect(&migrate.PgxDialect{})
 	default:
 		// TODO: if we had a dialect registry could make this generic
-		return errors.Errorf("Unrecognized dialect '%s'", dialectName)
+		return fmt.Errorf("Unrecognized dialect '%s'", dialectName)
 	}
 
 	// default fallthrough assumes we've initialized migrator with a dialect

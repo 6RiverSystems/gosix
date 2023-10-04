@@ -20,6 +20,7 @@
 package server
 
 import (
+	"fmt"
 	_ "net/http/pprof"
 	"os"
 
@@ -28,7 +29,6 @@ import (
 	"github.com/gin-contrib/location"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 
 	"go.6river.tech/gosix/logging"
 
@@ -49,7 +49,7 @@ func NewEngine() *gin.Engine {
 			// TODO: actually probably want debug mode here too?
 			gin.SetMode(gin.TestMode)
 		default:
-			panic(errors.Errorf("Unrecognized NODE_ENV value: '%s'", os.Getenv("NODE_ENV")))
+			panic(fmt.Errorf("Unrecognized NODE_ENV value: '%s'", os.Getenv("NODE_ENV")))
 		}
 	}
 
