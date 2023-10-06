@@ -65,6 +65,8 @@ type (
 	SubscriptionConfigToUpdate = pubsub.SubscriptionConfigToUpdate
 	RetryPolicy                = pubsub.RetryPolicy
 	PushConfig                 = pubsub.PushConfig
+	AuthenticationMethod       = pubsub.AuthenticationMethod
+	OIDCToken                  = pubsub.OIDCToken
 )
 
 type monitoredSubscription struct {
@@ -107,7 +109,7 @@ func (s *monitoredSubscription) ReceiveSettings() *pubsub.ReceiveSettings {
 	return &s.Subscription.ReceiveSettings
 }
 
-var defaultRetryPolicy = pubsub.RetryPolicy{
+var DefaultRetryPolicy = pubsub.RetryPolicy{
 	MinimumBackoff: time.Second,
 	MaximumBackoff: 10 * time.Minute,
 }
@@ -120,7 +122,7 @@ func (s *monitoredSubscription) EnsureDefaultConfig(
 	opts ...func(*SubscriptionConfigToUpdate),
 ) (SubscriptionConfig, error) {
 	// make copies of stuff so opts don't affect defaults for future calls
-	rp := defaultRetryPolicy
+	rp := DefaultRetryPolicy
 	cfg := SubscriptionConfigToUpdate{
 		RetryPolicy: &rp,
 	}

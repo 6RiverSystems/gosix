@@ -36,8 +36,10 @@ type Client interface {
 	IsEmulator() bool
 	CreateTopic(ctx context.Context, topicID string) (Topic, error)
 	Subscription(id string) Subscription
+	SubscriptionInProject(id, projectID string) Subscription
 	Subscriptions(context.Context) SubscriptionIterator
 	Topic(id string) Topic
+	TopicInProject(id, projectID string) Topic
 	Topics(context.Context) TopicIterator
 	// TODO: CreateTopicWithConfig
 
@@ -153,6 +155,10 @@ func (c *monitoredClient) Topic(id string) Topic {
 	return c.monitorTopic(c.Client.Topic(id))
 }
 
+func (c *monitoredClient) TopicInProject(id, projectID string) Topic {
+	return c.monitorTopic(c.Client.TopicInProject(id, projectID))
+}
+
 func (c *monitoredClient) Topics(ctx context.Context) TopicIterator {
 	return c.monitorTopicIterator(c.Client.Topics(ctx))
 }
@@ -162,10 +168,12 @@ func (c *monitoredClient) CreateTopic(ctx context.Context, topicID string) (Topi
 	return c.monitorTopic(t), err
 }
 
-// TODO: TopicsInProject, SubscriptionsInProject
-
 func (c *monitoredClient) Subscription(id string) Subscription {
 	return c.monitorSubscription(c.Client.Subscription(id))
+}
+
+func (c *monitoredClient) SubscriptionInProject(id, projectID string) Subscription {
+	return c.monitorSubscription(c.Client.SubscriptionInProject(id, projectID))
 }
 
 func (c *monitoredClient) Subscriptions(ctx context.Context) SubscriptionIterator {
