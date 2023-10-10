@@ -144,7 +144,6 @@ jobs:
                 fail_only: true
 
 workflows:
-  version: 2
   build-workflow:
     jobs:
       - all-in-one:
