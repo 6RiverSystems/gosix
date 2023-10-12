@@ -31,21 +31,26 @@ type testContextKey string
 
 var testFromContextKey testContextKey = testContextKey(uuid.NewString())
 
+type hasDeadline interface{ Deadline() (time.Time, bool) }
+
 func ContextForTest(t testing.TB) context.Context {
 	ctx := context.Background()
-	if tt, ok := t.(*testing.T); ok {
-		if d, ok := tt.Deadline(); ok {
-			var cancel func()
-			ctx, cancel = context.WithDeadline(ctx, d)
-			ctx = context.WithValue(ctx, testFromContextKey, t)
-			t.Cleanup(cancel)
+	var cancel context.CancelFunc
+	if tt, ok := t.(hasDeadline); ok {
+		if deadline, ok := tt.Deadline(); ok {
+			ctx, cancel = context.WithDeadline(ctx, deadline)
 		}
 	}
+	if cancel == nil {
+		ctx, cancel = context.WithCancel(ctx)
+	}
+	t.Cleanup(cancel)
+	ctx = context.WithValue(ctx, testFromContextKey, t)
 	return ctx
 }
 
 func DeadlineForTest(t testing.TB) time.Time {
-	if tt, ok := t.(*testing.T); ok {
+	if tt, ok := t.(hasDeadline); ok {
 		if deadline, ok := tt.Deadline(); ok {
 			return deadline
 		}
