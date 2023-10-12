@@ -55,6 +55,11 @@ type Topic interface {
 	// CreateSubscription lives on Client in the real API, but we move it here to
 	// avoid worrying about the Topic member on the SubscriptionConfig struct
 	CreateSubscription(ctx context.Context, id string, cfg SubscriptionConfig) (Subscription, error)
+
+	// EnableMessageOrdering turns on ordered publishing. This must be done before
+	// the first publish that uses an ordering key, and should be done before the
+	// first publish overall to avoid unexpected behavior and data races.
+	EnableMessageOrdering()
 }
 
 var (
@@ -72,9 +77,6 @@ type monitoredTopic struct {
 
 func (t *monitoredTopic) Publish(ctx context.Context, msg *pubsub.Message) *pubsub.PublishResult {
 	if msg.OrderingKey != "" {
-		// Why does the google api require us to push this button? it is only used to
-		// make publishing throw an error if we forgot to push it
-		t.Topic.EnableMessageOrdering = true
 		// make sure publishing is enabled before enqueuing this
 		// TODO: this is a bit of a hammer, in more complex cases we want to give
 		// the caller more control over this
@@ -110,4 +112,8 @@ func (t *monitoredTopic) CreateSubscription(ctx context.Context, id string, cfg 
 	realCfg.Topic = t.Topic
 	return t.c.createSubscription(ctx, id, realCfg)
 	// we could call EnsureDefaultConfig here, but that doesn't save much
+}
+
+func (t *monitoredTopic) EnableMessageOrdering() {
+	t.Topic.EnableMessageOrdering = true
 }
