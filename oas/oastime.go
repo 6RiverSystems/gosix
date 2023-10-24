@@ -38,6 +38,13 @@ func FromTime(value time.Time) Time {
 	return Time{value.UTC().Truncate(time.Millisecond)}
 }
 
+func FromTimePtr(value *time.Time) *Time {
+	if value == nil {
+		return nil
+	}
+	return &Time{value.UTC().Truncate(time.Millisecond)}
+}
+
 func (t Time) MarshalJSON() ([]byte, error) {
 	// TODO: pre-allocate to make it faster
 	return []byte(fmt.Sprintf(`"%s"`, t.UTC().Format(OASRFC3339Millis))), nil
