@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go/pubsub v1.33.0
-	entgo.io/ent v0.12.4
+	entgo.io/ent v0.12.5
 	github.com/Depado/ginprom v1.7.11
 	github.com/deepmap/oapi-codegen v1.16.2
 	github.com/getkin/kin-openapi v0.120.0
@@ -29,7 +29,7 @@ require (
 	golang.org/x/sync v0.5.0
 	golang.org/x/tools v0.15.0
 	golang.org/x/vuln v1.0.1
-	google.golang.org/api v0.150.0
+	google.golang.org/api v0.151.0
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 	gotest.tools/gotestsum v1.11.0
