@@ -18,7 +18,7 @@ require (
 	github.com/google/uuid v1.4.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.1
-	github.com/jackc/pgx/v5 v5.5.0
+	github.com/jackc/pgx/v5 v5.5.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/magefile/mage v1.15.0
 	github.com/prometheus/client_golang v1.17.0
@@ -29,7 +29,7 @@ require (
 	golang.org/x/sync v0.5.0
 	golang.org/x/tools v0.16.0
 	golang.org/x/vuln v1.0.1
-	google.golang.org/api v0.152.0
+	google.golang.org/api v0.153.0
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 	gotest.tools/gotestsum v1.11.0
