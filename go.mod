@@ -30,8 +30,8 @@ require (
 	golang.org/x/tools v0.16.1
 	golang.org/x/vuln v1.0.1
 	google.golang.org/api v0.154.0
-	google.golang.org/grpc v1.60.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/grpc v1.60.1
+	google.golang.org/protobuf v1.32.0
 	gotest.tools/gotestsum v1.11.0
 	mvdan.cc/gofumpt v0.5.0
 )
