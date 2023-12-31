@@ -21,7 +21,7 @@ require (
 	github.com/jackc/pgx/v5 v5.5.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/magefile/mage v1.15.0
-	github.com/prometheus/client_golang v1.17.0
+	github.com/prometheus/client_golang v1.18.0
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/rs/cors/wrapper/gin v0.0.0-20231013084403-73f81b45a644
 	github.com/rs/zerolog v1.31.0
@@ -30,8 +30,8 @@ require (
 	golang.org/x/tools v0.16.1
 	golang.org/x/vuln v1.0.1
 	google.golang.org/api v0.154.0
-	google.golang.org/grpc v1.60.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/grpc v1.60.1
+	google.golang.org/protobuf v1.32.0
 	gotest.tools/gotestsum v1.11.0
 	mvdan.cc/gofumpt v0.5.0
 )
