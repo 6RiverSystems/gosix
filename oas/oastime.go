@@ -49,3 +49,15 @@ func (t Time) MarshalJSON() ([]byte, error) {
 	// TODO: pre-allocate to make it faster
 	return []byte(fmt.Sprintf(`"%s"`, t.UTC().Format(OASRFC3339Millis))), nil
 }
+
+// Bind implements github.com/oapi-codegen/runtime.Binder, to prevent it from
+// being treated as a legacy oapi-codgen Date object and being parsed as just
+// the date.
+func (t *Time) Bind(src string) error {
+	tm, err := time.Parse(OASRFC3339Millis, src)
+	if err != nil {
+		return err
+	}
+	t.Time = tm
+	return nil
+}
