@@ -53,6 +53,7 @@ func Shutdown(s *http.Server, services *registry.Registry, graceful bool) {
 			// if main goroutine doesn't exit within one more second, just die
 			time.Sleep(time.Second)
 			logger.Info().Msg("Forcing exit after timeout")
+			//nolint: forbidigo
 			os.Exit(1)
 		}()
 	}

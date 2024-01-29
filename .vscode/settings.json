@@ -2,7 +2,6 @@
 	"editor.formatOnPaste": true,
 	"editor.formatOnSave": true,
 	"editor.formatOnSaveMode": "file",
-	"go.buildOnSave": "workspace",
 	"go.autocompleteUnimportedPackages": true,
 	"go.lintTool": "golangci-lint",
 	"go.generateTestsFlags": [
@@ -22,6 +21,7 @@
 		"entgo",
 		"entql",
 		"favicon",
+		"forbidigo",
 		"frob",
 		"frood",
 		"gofmt",

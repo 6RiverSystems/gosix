@@ -165,7 +165,7 @@ func (app *App) Main() (err error) {
 	var client ent.EntClientBase
 	// client.Close() just is a wrapper around drv.Close(), so we don't need to
 	// setup a separate defer for it
-	if client, err = app.setupDB(ctx, logger, drv); err != nil {
+	if client, err = app.setupDB(ctx, drv); err != nil {
 		return err
 	}
 	app.MustBind(entClientKey, registry.ConstantValue(client))
@@ -182,13 +182,11 @@ func (app *App) Main() (err error) {
 	}
 
 	var engine *gin.Engine
-	if engine, err = app.setupGin(ctx, client); err != nil {
+	if engine, err = app.setupGin(ctx); err != nil {
 		return err
 	}
 
-	if err = app.setupGrpc(ctx, engine); err != nil {
-		return err
-	}
+	app.setupGrpc(ctx, engine)
 
 	registry.RegisterDefaultSignalListener(app.Registry)
 
@@ -232,7 +230,7 @@ func (app *App) openDB(ctx context.Context, logger *logging.Logger) (drv *sql.Dr
 	return drv, nil
 }
 
-func (app *App) setupDB(ctx context.Context, logger *logging.Logger, drv *sql.Driver) (client ent.EntClientBase, err error) {
+func (app *App) setupDB(ctx context.Context, drv *sql.Driver) (client ent.EntClientBase, err error) {
 	sqlLogger := logging.GetLogger(app.Name + "/sql")
 	sqlLoggerFunc := func(args ...interface{}) {
 		for _, m := range args {
@@ -268,7 +266,7 @@ func (app *App) UseGinMiddleware(m func(*gin.Engine) error) {
 	app.ginMiddleware = append(app.ginMiddleware, m)
 }
 
-func (app *App) setupGin(ctx context.Context, client ent.EntClientBase) (*gin.Engine, error) {
+func (app *App) setupGin(ctx context.Context) (*gin.Engine, error) {
 	engine := server.NewEngine()
 	for _, m := range app.ginMiddleware {
 		if err := m(engine); err != nil {
@@ -328,7 +326,7 @@ func (app *App) setupGin(ctx context.Context, client ent.EntClientBase) (*gin.En
 	return engine, nil
 }
 
-func (app *App) setupGrpc(_ context.Context, engine *gin.Engine) error {
+func (app *App) setupGrpc(_ context.Context, engine *gin.Engine) {
 	if app.Grpc != nil {
 		grpcServiceTag := app.Registry.AddService(grpccommon.NewGrpcService(
 			app.Port, app.Grpc.PortOffset,
@@ -344,5 +342,4 @@ func (app *App) setupGrpc(_ context.Context, engine *gin.Engine) error {
 			app.Grpc.OnGatewayStart,
 		))
 	}
-	return nil
 }
