@@ -21,6 +21,7 @@ package pubsub
 
 import (
 	"context"
+	"errors"
 	"os"
 
 	"cloud.google.com/go/pubsub"
@@ -134,17 +135,33 @@ func NewClient(
 			[]string{"subscription", "outcome"},
 		),
 	}
-	if promReg != nil {
-		for _, c := range []prometheus.Collector{
-			client.publishStarted, client.published, client.publishFailed,
-			client.messagesReceived, client.messageDuration,
-		} {
-			if err := promReg.Register(c); err != nil {
-				return client, err
-			}
-		}
+	if err := registerOrReuse(promReg, &client.publishStarted, &client.published, &client.publishFailed, &client.messagesReceived); err != nil {
+		return client, err
+	}
+	if err := registerOrReuse(promReg, &client.messageDuration); err != nil {
+		return client, err
 	}
 	return client, nil
+}
+
+func registerOrReuse[T prometheus.Collector](reg prometheus.Registerer, collectors ...*T) error {
+	if reg == nil {
+		return nil
+	}
+	for _, c := range collectors {
+		if err := reg.Register(*c); err != nil {
+			var are prometheus.AlreadyRegisteredError
+			if errors.As(err, &are) {
+				cc, ok := are.ExistingCollector.(T)
+				if ok {
+					*c = cc
+					continue
+				}
+			}
+			return err
+		}
+	}
+	return nil
 }
 
 func (c *monitoredClient) IsEmulator() bool {
