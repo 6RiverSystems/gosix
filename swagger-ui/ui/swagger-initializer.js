@@ -11,6 +11,7 @@ window.onload = function() {
 		showCommonExtensions: true,
 		tryItOutEnabled: true,
 		withCredentials: true,
+		validatorUrl: null,
 		presets: [
 			SwaggerUIBundle.presets.apis,
 			SwaggerUIStandalonePreset
