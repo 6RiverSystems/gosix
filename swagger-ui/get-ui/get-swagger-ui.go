@@ -43,15 +43,15 @@ import (
 
 // update this by running: `npm view swagger-ui-dist@latest --json dist`
 var swaggerUiDistInfo = `{
-  "integrity": "sha512-mVZc9QVQ6pTCV5crli3+Ng+DoMPwdtMHK8QLk2oX8Mtamp4D/hV+uYdC3lV0JZrDgpNEcjs0RrWTqMwwosuLPQ==",
-  "shasum": "b783568cc7f494a9ad9173c9c98fd0cbbb5c851a",
-  "tarball": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.7.2.tgz",
+  "integrity": "sha512-vQ+Pe73xt7vMVbX40L6nHu4sDmNCM6A+eMVJPGvKrifHQ4LO3smH0jCiiefKzsVl7OlOcVEnrZ9IFzYwElfMkA==",
+  "shasum": "64c96e90b6a352e7b20a55b73b91fc0e0bed4f0a",
+  "tarball": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.11.3.tgz",
   "fileCount": 24,
-  "unpackedSize": 10285797,
+  "unpackedSize": 10297440,
   "signatures": [
     {
       "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
-      "sig": "MEYCIQDYszyWh8psYMpwtXLxFLvHXG5zgFprhINcAeYt/7kQFAIhAKN+H59E7EJum7ptBQTPIItTAS8SL1ROpbi9DffeVSLh"
+      "sig": "MEQCIFeZEvtocUK6K8u4u1aq2Zu0mOj6YV7ZrxKCHhPaBlHlAiAsmJ1VErPuWFvPAGs7i55ZcLvxCY3uwAOhhkbECop1Vg=="
     }
   ]
 }`
