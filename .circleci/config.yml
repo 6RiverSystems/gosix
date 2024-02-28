@@ -32,9 +32,9 @@ jobs:
 
     steps:
       - checkout
-      - run:
-          name: Limit cache weekly
-          command: date +%Y%U >/tmp/cache-time-limit
+      # - run:
+      #     name: Limit cache weekly
+      #     command: date +%Y%U >/tmp/cache-time-limit
       - restore_cache:
           name: Restore module cache
           keys:
@@ -183,9 +183,9 @@ jobs:
       GOPRIVATE: "go.6river.tech/*,github.com/6RiverSystems/*"
     steps:
       - checkout
-      - run:
-          name: Limit cache weekly
-          command: date +%Y%U >/tmp/cache-time-limit
+      # - run:
+      #     name: Limit cache weekly
+      #     command: date +%Y%U >/tmp/cache-time-limit
       - restore_cache:
           name: Restore module cache
           keys:
