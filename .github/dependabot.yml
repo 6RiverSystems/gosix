@@ -10,6 +10,16 @@ updates:
       go-everything:
         patterns:
           - "*"
+  - package-ecosystem: "gomod"
+    directory: "/example/"
+    schedule:
+      interval: "weekly"
+      day: sunday
+    open-pull-requests-limit: 20
+    groups:
+      go-everything:
+        patterns:
+          - "*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

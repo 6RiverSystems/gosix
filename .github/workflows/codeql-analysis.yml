@@ -68,9 +68,13 @@ jobs:
       # - name: Autobuild
       #   uses: github/codeql-action/autobuild@v2
 
-      - run: ./mage -v compile
+      - name: Compile Library
+        run: ./mage -v compile
+      - name: Compile Example
+        run: ./mage -v compile
+        working-directory: example
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         env:
-          CODEQL_EXTRACTOR_GO_BUILD_COMMAND: "./mage -v compile"
+          CODEQL_EXTRACTOR_GO_BUILD_COMMAND: "./mage -v compile && cd example && ./mage -v compile"
