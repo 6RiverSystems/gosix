@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	cloud.google.com/go/pubsub v1.36.1
-	entgo.io/ent v0.13.0
+	entgo.io/ent v0.13.1
 	github.com/Depado/ginprom v1.8.1
 	github.com/deepmap/oapi-codegen/v2 v2.1.0
 	github.com/getkin/kin-openapi v0.123.0
@@ -21,7 +21,7 @@ require (
 	github.com/jackc/pgx/v5 v5.5.3
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/magefile/mage v1.15.0
-	github.com/prometheus/client_golang v1.18.0
+	github.com/prometheus/client_golang v1.19.0
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/rs/cors/wrapper/gin v0.0.0-20231013084403-73f81b45a644
 	github.com/rs/zerolog v1.32.0
@@ -177,7 +177,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mattn/go-sqlite3 v1.14.18 // indirect
-	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
 	github.com/mbilski/exhaustivestruct v1.2.0 // indirect
 	github.com/mgechev/revive v1.3.7 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -197,7 +196,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/polyfloyd/go-errorlint v1.4.8 // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
-	github.com/prometheus/common v0.45.0 // indirect
+	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/quasilyte/go-ruleguard v0.4.0 // indirect
 	github.com/quasilyte/gogrep v0.5.0 // indirect
