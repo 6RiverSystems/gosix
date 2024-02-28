@@ -28,7 +28,7 @@ jobs:
       GOPRIVATE: "go.6river.tech/*,github.com/6RiverSystems/*"
       CGO_ENABLED: << parameters.cgo >>
 
-    resource_class: xlarge
+    resource_class: large
 
     steps:
       - checkout
