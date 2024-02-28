@@ -150,7 +150,7 @@ jobs:
           working_directory: example
           command: ./mage -v lint:ci
 
-  publish-docker-multiarch:
+  build-docker-multiarch:
     docker:
       - image: cimg/go:1.22
     resource_class: large
@@ -250,10 +250,11 @@ workflows:
                 - "0"
       - lint:
           context: 6rs-circle
-      - publish-docker-multiarch:
+      - build-docker-multiarch:
           context: 6rs-circle
           requires:
             - all-in-one
+            - lint
           filters:
             branches:
               only:
