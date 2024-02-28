@@ -25,6 +25,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -44,6 +45,7 @@ import (
 	// tools this needs, to keep `go mod tidy` from deleting lines
 	_ "github.com/golangci/golangci-lint/pkg/commands"
 	"golang.org/x/sync/errgroup"
+	_ "golang.org/x/tools/imports"
 )
 
 var (
@@ -56,6 +58,8 @@ var (
 	}
 )
 
+var goImportsFlags = []string{"-local", "github.com/6RiverSystems,go.6river.tech"}
+
 // cSpell:ignore nomsgpack
 var (
 	goBuildArgs = []string{"-tags", "nomsgpack"}
@@ -65,6 +69,17 @@ var (
 // always test with race and coverage, we'll run vet separately.
 // unless CGO is disabled, and race is not available
 var goTestArgs = []string{"-vet=off", "-cover", "-coverpkg=./..."}
+
+var (
+	cmds     = []string{"service"}
+	goArches = []string{"amd64", "arm64"}
+)
+
+var generatedSimple = []string{
+	"./ent/ent.go",
+	"./oas/oas-types.go",
+	"./version/version.go",
+}
 
 //cspell:ignore Deps
 
@@ -106,7 +121,7 @@ func GenerateDefault(ctx context.Context) error {
 type Generate mg.Namespace
 
 func (Generate) All(ctx context.Context) error {
-	mg.CtxDeps(ctx, Generate{}.SwaggerUI)
+	mg.CtxDeps(ctx, Generate{}.Ent, Generate{}.OAS, Generate{}.Version)
 	return nil
 }
 
@@ -127,13 +142,54 @@ func (Generate) Dir(ctx context.Context, dir string) error {
 	return nil
 }
 
-func (Generate) SwaggerUI(ctx context.Context) error {
-	if dirty, err := target.Path("./swagger-ui/ui/swagger-ui-bundle.js", "./swagger-ui/generate.go", "./swagger-ui/get-ui/get-swagger-ui.go"); err != nil {
+func (Generate) Ent(ctx context.Context) error {
+	if dirty, err := target.Path("./ent/ent.go", "./ent/generate.go", "go.mod", "go.sum"); err != nil {
+		return err
+	} else if !dirty {
+		if dirty, err := target.Glob("./ent/ent.go", "./ent/schema/*.go"); err != nil {
+			return err
+		} else if !dirty {
+			// clean
+			return nil
+		}
+	}
+	mg.CtxDeps(ctx, mg.F(Generate{}.Dir, "./ent"))
+	return nil
+}
+
+func (Generate) OAS(ctx context.Context) error {
+	if dirty, err := target.Path(
+		"./oas/oas-types.go",
+		"./oas/generate.go",
+		"./oas/openapi.yaml",
+		"./oas/oapi-codegen.yaml",
+		"go.mod",
+		"go.sum",
+	); err != nil {
 		return err
 	} else if !dirty {
 		return nil
 	}
-	mg.CtxDeps(ctx, mg.F(Generate{}.Dir, "./swagger-ui"))
+	mg.CtxDeps(ctx, mg.F(Generate{}.Dir, "./oas"))
+	return nil
+}
+
+func (Generate) Version(ctx context.Context) error {
+	// TODO: run `git rev-parse --show-toplevel` instead of assuming the location
+	// of the git root
+	if dirty, err := target.Path("./version/version.go", "./version/write-version.sh", "../.git/index", "../.git/refs/tags"); err != nil {
+		return err
+	} else if !dirty {
+		if dirty, err := target.Path("./version/version.go", ".version"); err != nil {
+			// .version might not exist
+			if !errors.Is(err, os.ErrNotExist) {
+				return err
+			}
+		} else if !dirty {
+			return nil
+		}
+	}
+	mg.CtxDeps(ctx, mg.F(Generate{}.Dir, "./version"))
 	return nil
 }
 
@@ -178,21 +234,29 @@ func InstallCITools(ctx context.Context) error {
 /* TODO
 tools:
 	mkdir -p ./tools
+	GOBIN=$(PWD)/tools go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen
+	GOBIN=$(PWD)/tools go install entgo.io/ent/cmd/...
 	GOBIN=$(PWD)/tools go install github.com/golangci/golangci-lint/cmd/golangci-lint
 */
 
-// Format formats code by running lint:golangciFix
+// Format formats all the go source code
 func Format(ctx context.Context) error {
-	mg.CtxDeps(ctx, Lint{}.GolangciFix)
+	mg.CtxDeps(ctx, mg.F(FormatDir, "."))
 	return nil
 }
 
 func FormatDir(ctx context.Context, dir string) error {
 	fmt.Printf("Formatting(%s)...\n", dir)
-	return Lint{}.golangci(ctx, false,
-		"--fix", dir,
-		"--allow-parallel-runners",
-	)
+	if err := sh.Run("go", "run", "mvdan.cc/gofumpt", "-l", "-w", dir); err != nil {
+		return err
+	}
+	goImportsArgs := []string{"run", "golang.org/x/tools/cmd/goimports", "-l", "-w"}
+	goImportsArgs = append(goImportsArgs, goImportsFlags...)
+	goImportsArgs = append(goImportsArgs, dir)
+	if err := sh.Run("go", goImportsArgs...); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Format formats just the generated go source code
@@ -208,19 +272,16 @@ func FormatGenerated(ctx context.Context) error {
 			files = append(files, l)
 		}
 	}
-	if len(files) == 0 {
-		// nothing to do
-		return nil
+	if err := sh.Run("go", append([]string{"run", "mvdan.cc/gofumpt", "-l", "-w", "."}, files...)...); err != nil {
+		return err
 	}
-	return Lint{}.golangci(ctx, false,
-		append(
-			[]string{
-				"--fix",
-				"--allow-parallel-runners",
-			},
-			files...,
-		)...,
-	)
+	goImportsArgs := []string{"run", "golang.org/x/tools/cmd/goimports", "-l", "-w"}
+	goImportsArgs = append(goImportsArgs, goImportsFlags...)
+	goImportsArgs = append(goImportsArgs, files...)
+	if err := sh.Run("go", goImportsArgs...); err != nil {
+		return err
+	}
+	return nil
 }
 
 type Lint mg.Namespace
@@ -228,7 +289,8 @@ type Lint mg.Namespace
 // LintDefault runs all the lint:* targets
 func LintDefault(ctx context.Context) error {
 	mg.CtxDeps(ctx, GenerateDefault)
-	mg.CtxDeps(ctx, Lint{}.VulnCheck, Lint{}.Golangci)
+	// basic includes everything except golangci-lint and govulncheck
+	mg.CtxDeps(ctx, Lint{}.Basic, Lint{}.VulnCheck, Lint{}.Golangci)
 	return nil
 }
 
@@ -237,8 +299,68 @@ func (Lint) Default(ctx context.Context) error {
 	return LintDefault(ctx)
 }
 
+// Basic runs all the lint targets except golangci-lint and govulncheck
+func (Lint) Basic(ctx context.Context) error {
+	mg.CtxDeps(ctx, Lint{}.Vet, Lint{}.Format, Lint{}.Imports, Lint{}.AddLicense)
+	return nil
+}
+
 func (Lint) Ci(ctx context.Context) error {
-	mg.CtxDeps(ctx, Lint{}.VulnCheck, Lint{}.GolangciJUnit)
+	mg.CtxDeps(ctx, Lint{}.Basic, Lint{}.VulnCheck, Lint{}.GolangciJUnit)
+	return nil
+}
+
+func (Lint) Vet(ctx context.Context) error {
+	fmt.Println("Linting(vet)...")
+	return sh.RunV("go", "vet", "./...")
+}
+
+// Format checks that all Go source code follows formatting rules
+func (Lint) Format(ctx context.Context) error {
+	fmt.Println("Linting(gofumpt)...")
+	outStr, err := runAndCapture("go", "run", "mvdan.cc/gofumpt", "-l", ".")
+	if err != nil {
+		return err
+	}
+	badFiles := splitWithoutBlanks(outStr)
+	// TODO: ignore git-ignored files equivalent to piping through `fgrep -xvf <(
+	// git ls-files --exclude-standard --others --ignored ) | grep .`
+	if len(badFiles) != 0 {
+		msg := &strings.Builder{}
+		fmt.Fprintln(msg, "The following files need to be re-formatted:")
+		for _, f := range badFiles {
+			fmt.Fprintf(msg, "%s\n", f)
+		}
+		return errors.New(msg.String())
+	}
+	return nil
+}
+
+// Imports runs the goimports linting tool
+func (Lint) Imports(ctx context.Context) error {
+	fmt.Println("Linting(goimports)...")
+	goImportsArgs := []string{"run"}
+	if os.Getenv("VERBOSE") != "" {
+		goImportsArgs = append(goImportsArgs, "-v")
+	}
+	goImportsArgs = append(goImportsArgs, "golang.org/x/tools/cmd/goimports", "-l")
+	goImportsArgs = append(goImportsArgs, goImportsFlags...)
+	goImportsArgs = append(goImportsArgs, ".")
+	outStr, err := runAndCapture("go", goImportsArgs...)
+	if err != nil {
+		return err
+	}
+	badFiles := splitWithoutBlanks(outStr)
+	// TODO: ignore git-ignored files equivalent to piping through `fgrep -xvf <(
+	// git ls-files --exclude-standard --others --ignored ) | grep .`
+	if len(badFiles) != 0 {
+		msg := &strings.Builder{}
+		fmt.Fprintln(msg, "The following files need to be re-formatted:")
+		for _, f := range badFiles {
+			fmt.Fprintf(msg, "%s\n", f)
+		}
+		return errors.New(msg.String())
+	}
 	return nil
 }
 
@@ -253,13 +375,7 @@ func (Lint) GolangciJUnit(ctx context.Context) error {
 	return Lint{}.golangci(ctx, true)
 }
 
-// GolangciFix runs the golangci-lint tool with the `--fix` option
-func (l Lint) GolangciFix(ctx context.Context) error {
-	fmt.Println("Linting(golangci:fix)...")
-	return l.golangci(ctx, false, "--fix")
-}
-
-func (Lint) golangci(ctx context.Context, junit bool, extra ...string) error {
+func (Lint) golangci(ctx context.Context, junit bool) error {
 	// in CI, expect golangci-lint to be installed, so we don't need to use "go
 	// run" to build it from source
 	var cmd string
@@ -285,8 +401,6 @@ func (Lint) golangci(ctx context.Context, junit bool, extra ...string) error {
 	if os.Getenv("CI") != "" && runtime.NumCPU() > 6 {
 		args = append(args, "--concurrency", "6")
 	}
-	// big project sometimes needs a while to lint
-	args = append(args, "--timeout=5m")
 
 	var err error
 	outFile := os.Stdout
@@ -303,7 +417,6 @@ func (Lint) golangci(ctx context.Context, junit bool, extra ...string) error {
 		}
 		defer outFile.Close()
 	}
-	args = append(args, extra...)
 	_, err = sh.Exec(map[string]string{}, outFile, os.Stderr, cmd, args...)
 	return err
 }
@@ -522,18 +635,18 @@ func CompileAndTest(ctx context.Context) error {
 
 // TODO: test-main-cover, smoke-test-curl-service
 
-func CleanGenerated(ctx context.Context) error {
-	for _, f := range []string{"./swagger-ui/ui", ".version"} {
+func CleanEnt(ctx context.Context) error {
+	return sh.Run("git", "-C", "ent", "clean", "-fdX")
+}
+
+func Clean(ctx context.Context) error {
+	mg.CtxDeps(ctx, CleanEnt)
+	for _, f := range generatedSimple {
 		if err := sh.Rm(f); err != nil {
 			return err
 		}
 	}
-	return nil
-}
-
-func Clean(ctx context.Context) error {
-	mg.CtxDeps(ctx, CleanGenerated)
-	for _, f := range []string{"bin", "coverage.out", "coverage.html"} {
+	for _, f := range []string{"bin", "coverage.out", "coverage.html", "common/swagger-ui/ui", ".version"} {
 		if err := sh.Rm(f); err != nil {
 			return err
 		}
@@ -549,4 +662,155 @@ func Clean(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// TODO: docker-dev-version
+
+func ReleaseBinary(ctx context.Context, cmd, arch string) error {
+	env := map[string]string{
+		"GOARCH": arch,
+		// NOTE: the base CI image we use can have a newer version of libc6 than the
+		// runtime base image, so we need to build statically always.
+		"CGO_ENABLED": "0",
+	}
+	args := []string{"build", "-v"}
+	args = append(args, goBuildArgs...)
+	args = append(args, "-o", filepath.Join("bin", cmd+"-"+arch), "./"+filepath.Join("cmd", cmd))
+	return sh.RunWith(env, "go", args...)
+}
+
+func ReleaseBinaries(ctx context.Context) error {
+	var fns []interface{}
+	for _, cmd := range cmds {
+		for _, arch := range goArches {
+			fns = append(fns, mg.F(ReleaseBinary, cmd, arch))
+		}
+	}
+	mg.CtxDeps(ctx, fns...)
+	return nil
+}
+
+type Docker mg.Namespace
+
+const multiArchBuilderName = "gosix-multiarch"
+
+func (Docker) MultiarchInitLocal(ctx context.Context) error {
+	// this is for initializing a local machine for dev, CI needs a different flow
+	// that's in the config there
+	return sh.Run("docker", "buildx", "create", "--name", multiArchBuilderName, "--bootstrap")
+}
+
+func (Docker) MultiarchBuildAll(ctx context.Context) error {
+	var fns []interface{}
+	for _, cmd := range cmds {
+		fns = append(fns, mg.F(Docker{}.MultiarchBuild, cmd))
+	}
+	// paralleling these just makes the output confusing
+	mg.SerialCtxDeps(ctx, fns...)
+	return nil
+}
+
+// MultiarchPushAll pushes all the multi-arch docker images. It actually has to
+// rebuild them, so it relies on the docker build cache working well to be
+// efficient.
+func (Docker) MultiarchPushAll(ctx context.Context) error {
+	var fns []interface{}
+	for _, cmd := range cmds {
+		fns = append(fns, mg.F(Docker{}.MultiarchPush, cmd))
+	}
+	// paralleling these just makes the output confusing
+	mg.SerialCtxDeps(ctx, fns...)
+	return nil
+}
+
+func (Docker) MultiarchBuild(ctx context.Context, cmd string) error {
+	fmt.Printf("Docker-MultiArch(%s)...\n", cmd)
+	return dockerRunMultiArch(ctx, cmd, "build")
+}
+
+func (Docker) MultiarchLoadArch(ctx context.Context, cmd string, arch string) error {
+	fmt.Printf("Docker-MultiArchLoad(%s)...\n", cmd)
+	return dockerRunMultiArch(ctx, cmd, "load", arch)
+}
+
+func (Docker) MultiarchPush(ctx context.Context, cmd string) error {
+	fmt.Printf("Docker-MultiArchPush(%s)...\n", cmd)
+	return dockerRunMultiArch(ctx, cmd, "push")
+}
+
+func dockerRunMultiArch(ctx context.Context, cmd string, mode string, arches ...string) error {
+	switch mode {
+	case "build", "load", "push":
+		// OK
+	default:
+		return fmt.Errorf("invalid multi-arch mode '%s', must be build, load, or push", mode)
+	}
+	var args []string
+	if os.Getenv("CI") != "" {
+		args = append(args, "--context", "multiarch-context")
+	}
+	args = append(args, "buildx", "build", "--builder", multiArchBuilderName)
+	var platforms []string
+	if len(arches) == 0 {
+		arches = goArches
+	}
+	for _, arch := range arches {
+		platforms = append(platforms, runtime.GOOS+"/"+arch)
+	}
+	args = append(args, "--platform", strings.Join(platforms, ","))
+	var version string
+	if content, err := os.ReadFile(".version"); err != nil {
+		return err
+	} else {
+		version = strings.TrimSpace(string(content))
+	}
+	baseImage := "gosix-example-" + cmd
+	baseTag := baseImage + ":" + version
+	if mode == "push" {
+		const gcrBase = "gcr.io/plasma-column-128721/"
+		// push everything to gcr
+		args = append(args, "-t", gcrBase+baseTag)
+		if os.Getenv("CIRCLE_BRANCH") == "main" {
+			// push latest tag on main
+			args = append(args, "-t", gcrBase+baseImage+":latest")
+			// TODO: why is dockerhub access broken? CI secrets expired?
+			// // also push to docker hub for builds on main
+			// if os.Getenv("DOCKERHUB_USER") != "" {
+			// 	mg.CtxDeps(ctx, Docker{}.HubLogin)
+			// 	args = append(args, "-t", "6river/"+baseTag)
+			// 	args = append(args, "-t", "6river/"+baseImage+":latest")
+			// }
+		}
+	} else {
+		// base tag is not valid to push, but a useful local thing to use for the
+		// only-build mode
+		args = append(args, "-t", baseTag)
+	}
+	args = append(args, "--build-arg", "BINARYNAME="+cmd)
+	if mode == "push" {
+		args = append(args, "--push")
+	} else if mode == "load" {
+		args = append(args, "--load")
+	}
+	args = append(args, ".")
+	return sh.RunWithV(
+		// TODO: not sure we need this
+		map[string]string{"BINARYNAME": cmd},
+		"docker", args...,
+	)
+}
+
+func (Docker) HubLogin(ctx context.Context) error {
+	user, password := os.Getenv("DOCKERHUB_USER"), os.Getenv("DOCKERHUB_PASSWORD")
+	if user == "" || password == "" {
+		return fmt.Errorf("missing DOCKERHUB_USER and/or DOCKERHUB_PASSWORD")
+	}
+	// have to use raw exec to set stdin
+	cmd := exec.CommandContext(ctx, "docker", "login", "--username", user, "--password-stdin")
+	cmd.Stdin = strings.NewReader(password)
+	if mg.Verbose() {
+		cmd.Stdout = os.Stdout
+	}
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
