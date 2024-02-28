@@ -1,6 +1,6 @@
 module go.6river.tech/gosix
 
-go 1.21
+go 1.22
 
 require (
 	cloud.google.com/go/pubsub v1.36.1

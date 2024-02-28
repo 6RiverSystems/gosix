@@ -29,16 +29,12 @@ import (
 	"go.6river.tech/gosix/ginmiddleware"
 )
 
-var key ginmiddleware.EntKey[*ent.Client, *ent.Tx]
-
-// TODO: upgrade to simpler construct once using go 1.21
-var keyInit sync.Once
+var keyInit = sync.OnceValue(func() ginmiddleware.EntKey[*ent.Client, *ent.Tx] {
+	return ginmiddleware.EntKey[*ent.Client, *ent.Tx](db.GetDefaultDbName())
+})
 
 func Key() ginmiddleware.EntKey[*ent.Client, *ent.Tx] {
-	keyInit.Do(func() {
-		key = ginmiddleware.EntKey[*ent.Client, *ent.Tx](db.GetDefaultDbName())
-	})
-	return key
+	return keyInit()
 }
 
 func Transaction(c *gin.Context) *ent.Tx {

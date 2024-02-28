@@ -16,7 +16,7 @@ jobs:
       cgo:
         type: string
     docker:
-      - image: cimg/go:1.21
+      - image: cimg/go:1.22
       - image: cimg/postgres:<< parameters.pgver >>
         environment:
           POSTGRES_USER: circle
