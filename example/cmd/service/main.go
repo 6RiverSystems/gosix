@@ -68,6 +68,7 @@ func main() {
 
 		if !testModeIgnoreArgs {
 			fmt.Fprintf(os.Stderr, "gosix-example does not accept command line arguments: %v\n", os.Args[1:])
+			//nolint: forbidigo // intentional
 			os.Exit(1)
 		}
 	}
