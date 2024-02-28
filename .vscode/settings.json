@@ -2,7 +2,6 @@
 	"editor.formatOnPaste": true,
 	"editor.formatOnSave": true,
 	"editor.formatOnSaveMode": "file",
-	"go.autocompleteUnimportedPackages": true,
 	"go.lintTool": "golangci-lint",
 	"go.generateTestsFlags": [
 		"-template=testify"
@@ -20,6 +19,7 @@
 		"entcommon",
 		"entgo",
 		"entql",
+		"entsql",
 		"favicon",
 		"forbidigo",
 		"frob",
@@ -28,8 +28,8 @@
 		"gofumpt",
 		"goimports",
 		"golangci",
-		"gonic",
 		"gonic's",
+		"gonic",
 		"gopls",
 		"gosix",
 		"hashicorp",
