@@ -154,10 +154,11 @@ func Get(ctx context.Context) error {
 	if err := sh.Run("go", "mod", "download", "-x"); err != nil {
 		return err
 	}
-	fmt.Println("Verifying dependencies...")
-	if err := sh.Run("go", "mod", "verify"); err != nil {
-		return err
-	}
+	// TODO: restore this once https://github.com/golang/go/issues/65852 is released (go 1.22.1)
+	// fmt.Println("Verifying dependencies...")
+	// if err := sh.Run("go", "mod", "verify"); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 
