@@ -118,7 +118,7 @@ jobs:
     docker:
       - image: cimg/go:1.22
     environment:
-      # TEST_RESULTS: /tmp/test-results
+      TEST_RESULTS: /tmp/test-results
       # DATABASE_URL: "postgres://circle@localhost:5432/circle_test?sslmode=disable"
       GOPRIVATE: "go.6river.tech/*,github.com/6RiverSystems/*"
       CGO_ENABLED: 0
@@ -143,12 +143,22 @@ jobs:
       # format check is just golangci-lint, so don't need to run it separately,
       # running the linter is sufficient and will error on formatting problems.
       - run:
+          name: Prepare for tests
+          command: mkdir -p $TEST_RESULTS/{gosix,example}
+      - run:
           name: Lint Library
-          command: ./mage -v lint:ci
+          command: TEST_RESULTS=$TEST_RESULTS/gosix ./mage -v lint:ci
       - run:
           name: Lint Example
           working_directory: example
-          command: ./mage -v lint:ci
+          command: TEST_RESULTS=$TEST_RESULTS/example ./mage -v lint:ci
+      - store_artifacts:
+          name: Capture test result artifacts
+          path: /tmp/test-results
+          destination: raw-test-output
+      - store_test_results:
+          name: Store test results for CircleCI
+          path: /tmp/test-results
 
   build-docker-multiarch:
     docker:
