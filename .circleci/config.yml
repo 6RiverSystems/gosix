@@ -28,6 +28,8 @@ jobs:
       GOPRIVATE: "go.6river.tech/*,github.com/6RiverSystems/*"
       CGO_ENABLED: << parameters.cgo >>
 
+    resource_class: xlarge
+
     steps:
       - checkout
       - run:
@@ -36,15 +38,15 @@ jobs:
       - restore_cache:
           name: Restore module cache
           keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
-      - restore_cache:
-          name: Restore similar AIO build cache
-          keys:
-            - go-build-aio-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
-            - go-build-aio-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-
+            - go-mod-v2-{{ checksum "go.sum" }}-{{checksum "example/go.sum" }}
+      # - restore_cache:
+      #     name: Restore similar AIO build cache
+      #     keys:
+      #       - go-build-aio-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
+      #       - go-build-aio-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-
 
-        # for Go modules, we only need version numbers on `main`, as Go can
-        # pull any other git commit by hash. we only need to do this for one matrix variant.
+      # for Go modules, we only need version numbers on `main`, as Go can
+      # pull any other git commit by hash. we only need to do this for one matrix variant.
       - when:
           condition:
             and:
@@ -57,7 +59,12 @@ jobs:
                 name: Capture chosen version
                 path: .version
 
-      - run: ./mage -v get
+      - run:
+          name: Download Go Modules
+          command: |
+            ./mage -v get
+            cd example
+            ./mage -v get
       # gotestsum is included in the cimg/go image
       # - run: ./mage -v installCITools
       - run:
@@ -66,19 +73,29 @@ jobs:
           name: Verify committed generated code is up to date
           command: |
             ./mage -v cleanGenerated generate:force formatGenerated
+            pushd example
+            ./mage -v generate:force formatGenerated
+            popd
             git diff --exit-code
 
       - run:
-          name: Compile code
+          name: Compile Library
+          command: ./mage -v compile
+      - run:
+          name: Compile Example
+          working_directory: example
           command: ./mage -v compile
 
       - run:
           name: Prepare for tests
-          command: mkdir -p $TEST_RESULTS
+          command: mkdir -p $TEST_RESULTS/{gosix,example}
       - run:
           name: format check
           command: |
             ./mage -v format
+            pushd example
+            ./mage -v format
+            popd
             git diff --exit-code
       # we only need to run lint on one build variant
       - when:
@@ -87,33 +104,45 @@ jobs:
               - equal: ["1", << parameters.cgo >>]
               - equal: [*pg_default, << parameters.pgver >>]
           steps:
-            - restore_cache:
-                name: Restore golangci-lint cache
-                keys:
-                  - go-lint-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
-                  - go-lint-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-
-            - run: ./mage -v lint:ci
-            - save_cache:
-                name: Save golangci-lint cache
-                key: go-lint-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
-                paths:
-                  - ~/.cache/golangci-lint
+            # - restore_cache:
+            #     name: Restore golangci-lint cache
+            #     keys:
+            #       - go-lint-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
+            #       - go-lint-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-
+            - run:
+                name: Lint Library
+                command: ./mage -v lint:ci
+            - run:
+                name: Lint Example
+                working_directory: example
+                command: ./mage -v lint:ci
+            # - save_cache:
+            #     name: Save golangci-lint cache
+            #     key: go-lint-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
+            #     paths:
+            #       - ~/.cache/golangci-lint
       - run:
           name: Waiting for Postgres to be ready
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
-          name: Run tests
+          name: Run Library Tests
           environment:
             NODE_ENV: test
           # while we aren't using the parallel test split here, we still need to
           # use test-go-ci-split to get junit output and proper coverage file
           # storage
-          command: ./mage -v testGoCISplit
-
+          command: TEST_RESULTS=$TEST_RESULTS/gosix ./mage -v testGoCISplit
       - run:
-          name: Coverage HTML report
-          command: |
-            go tool cover -html="${TEST_RESULTS}/coverage.out" -o "${TEST_RESULTS}/coverage.html"
+          name: Run Example Tests
+          environment:
+            NODE_ENV: test
+          working_directory: example
+          command: TEST_RESULTS=$TEST_RESULTS/example ./mage -v testGoCISplit
+
+      # - run:
+      #     name: Coverage HTML report
+      #     command: |
+      #       go tool cover -html="${TEST_RESULTS}/coverage.out" -o "${TEST_RESULTS}/coverage.html"
       - sixrs-gke/codecov:
           codecov-params: "-s ${TEST_RESULTS}"
       - store_artifacts:
@@ -125,14 +154,14 @@ jobs:
           path: /tmp/test-results
       - save_cache:
           name: Save module cache
-          key: go-mod-v1-{{ checksum "go.sum" }}
+          key: go-mod-v2-{{ checksum "go.sum" }}-{{ checksum "example/go.sum" }}
           paths:
             - "/home/circleci/go/pkg"
-      - save_cache:
-          name: Save AIO build cache
-          key: go-build-aio-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
-          paths:
-            - ~/.cache/go-build
+      # - save_cache:
+      #     name: Save AIO build cache
+      #     key: go-build-aio-v1-cgo<< parameters.cgo >>-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
+      #     paths:
+      #       - ~/.cache/go-build
 
       # post to slack if `main` fails to build
       - when:
@@ -142,6 +171,104 @@ jobs:
             - sixrs-gke/status:
                 channel: "#curiosity_alerts"
                 fail_only: true
+
+  publish-docker-multiarch:
+    docker:
+      - image: cimg/go:1.22
+    resource_class: large
+    environment:
+      GOPRIVATE: "go.6river.tech/*,github.com/6RiverSystems/*"
+    steps:
+      - checkout
+      - run:
+          name: Limit cache weekly
+          command: date +%Y%U >/tmp/cache-time-limit
+      - restore_cache:
+          name: Restore module cache
+          keys:
+            - go-mod-v2-{{ checksum "go.sum" }}-{{ checksum "example/go.sum" }}
+      # - restore_cache:
+      #     name: Restore similar multiarch build cache
+      #     keys:
+      #       - go-build-multiarch-v1-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
+      #       - go-build-multiarch-v1-{{ checksum "/tmp/cache-time-limit" }}-
+      # for Go modules, we only need version numbers on `main`, as Go can
+      # pull any other git commit by hash. We do need a version tag for
+      # docker for this package however, just don't need it to be a git
+      # tag.
+      - when:
+          condition:
+            equal: ["main", << pipeline.git.branch >>]
+          steps:
+            - sixrs-gke/run-release
+            - run: mv -v .version example/.version
+      - unless:
+          condition:
+            equal: ["main", << pipeline.git.branch >>]
+          steps:
+            - run:
+                name: Select dev version
+                working_directory: example
+                command: ./mage -v generate:devVersion
+
+      - store_artifacts:
+          name: Capture chosen version
+          path: example/.version
+      - run:
+          name: Download Go Modules
+          command: ./mage -v get
+      - run:
+          name: Generate Code
+          working_directory: example
+          command: ./mage -v generate
+      - setup_remote_docker:
+          version: docker24
+      - sixrs-gke/docker-login
+      - run:
+          name: Initialize docker buildx
+          command: |
+            docker run --privileged --rm tonistiigi/binfmt --install all
+            docker context create multiarch-context
+            docker buildx create --name gosix-multiarch --driver docker-container --bootstrap --use multiarch-context
+      - run:
+          name: Build multiarch binaries
+          working_directory: example
+          command: ./mage -v releaseBinaries
+      - run:
+          name: Build multiarch docker images
+          working_directory: example
+          command: ./mage -v docker:multiarchBuildAll
+      - run:
+          name: Verify docker images
+          working_directory: example
+          command: |
+            set -xeuo pipefail
+            for plat in amd64 arm64 ; do
+              ./mage -v docker:multiarchLoadArch service $plat
+              docker run --rm --platform linux/$plat --entrypoint /app/service gosix-example-service:$(<.version) --version
+              # fire this one into the background for the smoke test run
+              docker run --name service-smoke-$plat --rm --platform linux/$plat \
+                --env 'DATABASE_URL=sqlite:///data/gosix-example-service.sqlite?_pragma=foreign_keys(1)&_pragma=journal_mode(wal)&_pragma=busy_timeout(10000)&cache=private&_txlock=immediate' \
+                --env 'PUBSUB_EMULATOR_HOST=localhost:8802' \
+                --env 'PUBSUB_GCLOUD_PROJECT_ID=__none__' \
+                gosix-example-service:$(<.version) &
+              pid=$!
+              # can't contact the remote docker directly, so we have to build
+              # the mage binary, copy it over, and exec it
+              CGO_ENABLED=0 ./mage -v -compile magebinary-$plat -goarch $plat
+              docker cp magebinary-$plat service-smoke-$plat:/
+              # this should ask the app to shut down at the end
+              docker exec service-smoke-$plat /magebinary-$plat -v testSmokeCore service localhost:3000
+              wait $pid
+            done
+      # - run:
+      #     name: Push multiarch docker images
+      #     command: ./mage -v docker:multiarchPushAll
+      # - save_cache:
+      #     name: Save multiarch build cache
+      #     key: go-build-multiarch-v1-{{ checksum "/tmp/cache-time-limit" }}-{{ .Revision }}
+      #     paths:
+      #       - ~/.cache/go-build
 
 workflows:
   build-workflow:
