@@ -59,12 +59,15 @@ jobs:
                 name: Capture chosen version
                 path: .version
 
-      - run:
-          name: Download Go Modules
-          command: |
-            ./mage -v get
-            cd example
-            ./mage -v get
+      # even with the module cache restored, this takes a while for some reason,
+      # skip it for now and just save/restore the modules we actually use for
+      # the run
+      # - run:
+      #     name: Download Go Modules
+      #     command: |
+      #       ./mage -v get
+      #       cd example
+      #       ./mage -v get
       # gotestsum is included in the cimg/go image
       # - run: ./mage -v installCITools
       - run:
