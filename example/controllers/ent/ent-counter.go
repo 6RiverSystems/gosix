@@ -30,11 +30,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"go.6river.tech/gosix/db"
 	"go.6river.tech/gosix/example/ent"
 	"go.6river.tech/gosix/example/ent/counter"
 	"go.6river.tech/gosix/example/middleware"
 	"go.6river.tech/gosix/example/oas"
-	"go.6river.tech/gosix/db"
 	"go.6river.tech/gosix/ginmiddleware"
 	"go.6river.tech/gosix/logging"
 	"go.6river.tech/gosix/registry"

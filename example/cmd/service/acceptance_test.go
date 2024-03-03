@@ -35,12 +35,12 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 
+	"go.6river.tech/gosix/db/postgres"
 	"go.6river.tech/gosix/example/defaults"
 	"go.6river.tech/gosix/example/ent"
 	"go.6river.tech/gosix/example/ent/counter"
 	"go.6river.tech/gosix/example/internal/testutils"
 	"go.6river.tech/gosix/example/oas"
-	"go.6river.tech/gosix/db/postgres"
 	"go.6river.tech/gosix/logging"
 	oastypes "go.6river.tech/gosix/oas"
 	"go.6river.tech/gosix/server"
