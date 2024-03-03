@@ -18,7 +18,7 @@ require (
 	github.com/ory/dockertest/v3 v3.10.0
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/stretchr/testify v1.9.0
-	go.6river.tech/gosix v0.11.4
+	go.6river.tech/gosix v0.11.5
 	golang.org/x/sync v0.6.0
 	golang.org/x/tools v0.18.0
 	golang.org/x/vuln v1.0.4
