@@ -1,4 +1,4 @@
-module go.6river.tech/gosix-example
+module go.6river.tech/gosix/example
 
 go 1.22
 

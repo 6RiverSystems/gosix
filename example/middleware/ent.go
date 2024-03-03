@@ -24,7 +24,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"go.6river.tech/gosix-example/ent"
+	"go.6river.tech/gosix/example/ent"
 	"go.6river.tech/gosix/db"
 	"go.6river.tech/gosix/ginmiddleware"
 )

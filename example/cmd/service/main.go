@@ -31,14 +31,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"go.6river.tech/gosix-example/controllers"
-	_ "go.6river.tech/gosix-example/controllers"
-	"go.6river.tech/gosix-example/defaults"
-	"go.6river.tech/gosix-example/ent"
-	"go.6river.tech/gosix-example/ent/counter"
-	"go.6river.tech/gosix-example/migrations"
-	"go.6river.tech/gosix-example/oas"
-	"go.6river.tech/gosix-example/version"
+	"go.6river.tech/gosix/example/controllers"
+	_ "go.6river.tech/gosix/example/controllers"
+	"go.6river.tech/gosix/example/defaults"
+	"go.6river.tech/gosix/example/ent"
+	"go.6river.tech/gosix/example/ent/counter"
+	"go.6river.tech/gosix/example/migrations"
+	"go.6river.tech/gosix/example/oas"
+	"go.6river.tech/gosix/example/version"
 	"go.6river.tech/gosix/app"
 	_ "go.6river.tech/gosix/controllers"
 	entcommon "go.6river.tech/gosix/ent"
@@ -47,7 +47,7 @@ import (
 	"go.6river.tech/gosix/migrate"
 	"go.6river.tech/gosix/registry"
 
-	_ "go.6river.tech/gosix-example/ent/runtime"
+	_ "go.6river.tech/gosix/example/ent/runtime"
 )
 
 var testModeIgnoreArgs = false

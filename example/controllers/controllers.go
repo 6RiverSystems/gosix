@@ -20,8 +20,8 @@
 package controllers
 
 import (
-	"go.6river.tech/gosix-example/controllers/ent"
-	"go.6river.tech/gosix-example/controllers/pubsub"
+	"go.6river.tech/gosix/example/controllers/ent"
+	"go.6river.tech/gosix/example/controllers/pubsub"
 	"go.6river.tech/gosix/registry"
 )
 

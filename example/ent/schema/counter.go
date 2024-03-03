@@ -30,7 +30,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 
-	"go.6river.tech/gosix-example/ent/util"
+	"go.6river.tech/gosix/example/ent/util"
 	entcommon "go.6river.tech/gosix/ent"
 	"go.6river.tech/gosix/ent/mixins"
 )

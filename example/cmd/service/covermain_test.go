@@ -32,7 +32,7 @@ import (
 	"os"
 	"testing"
 
-	"go.6river.tech/gosix-example/internal/testutils"
+	"go.6river.tech/gosix/example/internal/testutils"
 )
 
 func TestCoverMain(t *testing.T) {
