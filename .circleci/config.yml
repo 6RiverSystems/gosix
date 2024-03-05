@@ -201,8 +201,7 @@ jobs:
           name: Generate Code
           working_directory: example
           command: ./mage -v generate
-      - setup_remote_docker:
-          version: docker24
+      - setup_remote_docker
       - sixrs-gke/docker-login
       - run:
           name: Initialize docker buildx
