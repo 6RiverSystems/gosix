@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "generate code - library",
+			"label": "generate code",
 			"type": "process",
 			"command": "./mage",
 			"args": [
@@ -10,18 +10,6 @@
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
-			},
-			"group": "build"
-		},
-		{
-			"label": "generate code - example",
-			"type": "process",
-			"command": "./mage",
-			"args": [
-				"generate"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}/example"
 			},
 			"group": "build"
 		},
@@ -35,22 +23,6 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			},
-			"problemMatcher": "$go"
-		},
-		{
-			"label": "build example",
-			"type": "process",
-			"command": "./mage",
-			"args": [
-				"compile:code"
-			],
-			"options": {
-				"cwd": "${workspaceFolder}/example"
-			},
-			"group": {
-				"kind": "build",
-				"isDefault": false
 			},
 			"problemMatcher": "$go"
 		},

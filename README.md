@@ -1,31 +1,7 @@
 # Go Six
 
-An experimental helper library for building idiomatic (to Go and 6RS) cloud
-services.
+This was an experimental helper library for building idiomatic (to Go and 6RS) cloud
+services. The experiment is over and it has been replaced by Uber's Fx library.
 
-## Developing
-
-Updating generated code:
-
-    go generate -x ./...
-
-Build:
-
-    go build -v ./...
-
-Test:
-
-    go test -race ./...
-
-Or, using `make`:
-
-    make # does everything
-
-There are other `make` targets to run individual steps as well
-
-## Using
-
-See the
-[6RiverSystems/gosix-example](https://github.com/6RiverSystems/gosix-example)
-repo for a simple app built using this framework, or the `docs` directory here
-for more details.
+The empty module is left to force migrations away from it to complete. The git
+history is left behind to assist that and for any interested spelunkers.
