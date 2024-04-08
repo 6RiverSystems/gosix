@@ -96,7 +96,7 @@ func (s *gatewayService) Start(ctx context.Context, ready chan<- struct{}) error
 	<-s.services.ReadyWaiter(s.grpcServiceTag)
 
 	var err error
-	if s.conn, err = grpc.Dial(s.endpoint, opts...); err != nil {
+	if s.conn, err = grpc.NewClient(s.endpoint, opts...); err != nil {
 		return err
 	}
 	if err = s.initHandlers(ctx, mux, s.conn); err != nil {
